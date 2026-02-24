@@ -364,5 +364,3 @@ __Estimated Time__
 
 0.5-1 day
 
-
-

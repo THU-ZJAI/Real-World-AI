@@ -8,7 +8,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 ## Arena List Data
 
 > This file is auto-generated from List of Arenas.xlsx
-> Last updated: 2026-02-04T11:30:16.769Z
+> Last updated: 2026-02-24T01:53:02.898Z
 
 ### 1. Enterprise-Level Intelligent Research Report Generation System Demo
 
@@ -19,7 +19,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: Claude Code + GLM 4.7 + Metaso
 
-**Challenger**: Private Deployment: Claude Code + Kimi K2.5 + Metaso
+**Challenger**: Private Deployment: Claude Code +Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5 + Metaso
 
 **Highlights**: Build an intelligent research system demo with data collection, knowledge integration, and report generation capabilities in one week
 
@@ -39,7 +39,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Cloud Version: Lovable + GLM 4.7 + Claude Code
 
-**Challenger**: Cloud Version: Lovable + Kimi K2.5 + Claude Code
+**Challenger**: Cloud Version: Lovable + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5 + Claude Code
 
 **Highlights**: Build a business dashboard or website demo with basic interactive capabilities in 1-2 days with zero technical threshold
 
@@ -59,7 +59,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: LangChain + GLM 4.7 + Pydantic + unstructured + Faiss
 
-**Challenger**: Private Deployment: LangChain + Kimi K2.5 + Pydantic + unstructured + Faiss
+**Challenger**: Private Deployment: LangChain + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5  + Pydantic + unstructured + Faiss
 
 **Highlights**: Build a document parsing system demo with completeness checks and risk assessment in one week
 
@@ -79,7 +79,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: Claude Code + GLM 4.7 + FFmpeg + FunASR + PaddleSpeech
 
-**Challenger**: Private Deployment: Claude Code + Kimi K2.5 + FFmpeg + FunASR + PaddleSpeech
+**Challenger**: Private Deployment: Claude Code + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5  + FFmpeg + FunASR + PaddleSpeech
 
 **Highlights**: Generate an enterprise-level product or feature demo video within 2.5 days at fastest
 
@@ -99,7 +99,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: BISHENG + GLM 4.7
 
-**Challenger**: Private Deployment: BISHENG + Kimi K2.5 
+**Challenger**: Private Deployment: BISHENG + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5 
 
 **Highlights**: Build a children's education app demo in one week
 
@@ -219,7 +219,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: Coze + GLM 4.7
 
-**Challenger**: Private Deployment: Coze + Kimi K2.5 
+**Challenger**: Private Deployment: Coze + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5 
 
 **Highlights**: Build a conversational assistant demo with active questioning and recommendation capabilities using low-code in one week
 
@@ -239,7 +239,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: LangChain + GLM 4.7
 
-**Challenger**: Private Deployment: LangChain + Kimi K2.5 
+**Challenger**: Private Deployment: LangChain + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5  + Pydantic + unstructured + Faiss
 
 **Highlights**: Build a banking intelligent credit system demo with multi-source data integration, compliance verification, and one-click credit report generation using low-code in one week
 
@@ -259,7 +259,7 @@ pageSubtitle: Find the ONE AI Best Practice for your Scenario
 
 **Champion**: Private Deployment: LangChain + GLM 4.7
 
-**Challenger**: Private Deployment: LangChain + Kimi K2.5 
+**Challenger**: Private Deployment: LangChain + Kimi K2.5/GLM-5/Minimax M2.5/Qwen 3.5  + Pydantic + unstructured + Faiss
 
 **Highlights**: Complete the full-process construction of a single national industrial chain graph using low-code in one week
 

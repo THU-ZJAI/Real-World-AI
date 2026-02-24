@@ -646,8 +646,8 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
         semanticColor: 'violet' // Efficiency/Speed
       },
       {
-        title: isChina ? '支持国产大模型' : 'Support Domestic LLMs',
-        description: isChina ? '节省90%成本，GLM-4.7等国产模型性能优异' : 'Save 90% cost, domestic models like GLM-4.7 perform excellently',
+        title: isChina ? '支持开源大模型' : 'Support Open-Source LLMs',
+        description: isChina ? '节省90%成本，GLM-4.7等常见开源基座大模型' : 'Save 90% cost, support open-source models like GLM-4.7',
         icon: DollarSign,
         semanticColor: 'blue' // Cost/Savings
       },
@@ -888,8 +888,8 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
       {
         title: isChina ? '成本更低' : 'Lower Cost',
         desc: isChina
-          ? '支持国产大模型（如 GLM 系列），在保持效果的前提下，整体成本降低 60%+。'
-          : 'Supports domestic models (e.g., GLM series), 60%+ cost reduction while maintaining quality.',
+          ? '支持高性价比常用大模型（如 GLM 系列），在保持效果的前提下，整体成本降低 60%+。'
+          : 'Supports high-performance & cost-effective models (e.g., GLM series), 60%+ cost reduction while maintaining quality.',
         semanticColor: 'blue' as const // Cost/Savings
       },
       {

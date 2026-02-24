@@ -3,6 +3,7 @@ import { arenas, industries, categories } from '@/lib/data';
 import { Arena } from '@/lib/types';
 import { CheckCircle2, Trophy, Star, ArrowRight, Building2, ShoppingCart, GraduationCap, HeartPulse, Zap, Factory, Building, Target, Users, Code2, Layers, FlaskRound, Copy, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getHomepageSectionContent, parseHomepageSectionContent } from '@/lib/content';
 import { Suspense, Fragment } from 'react';
 import Image from 'next/image';
@@ -27,6 +28,10 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const supportedLocales = ['en', 'zh'];
+  if (!supportedLocales.includes(locale)) {
+    notFound();
+  }
 
   return (
     <div className="w-full">
