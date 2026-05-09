@@ -1,104 +1,194 @@
-# test only
+# Real-World AI
 
-## 技术栈
+Real-World AI (RWAI) is an open-source project for collecting, evaluating, and sharing production-oriented AI best practices. It focuses on real implementation scenarios rather than abstract model benchmarks, helping teams understand what to build, how to deploy it, and how to evaluate whether it works in practice.
 
-- **框架**: Next.js 16+ (App Router)
-- **语言**: TypeScript
-- **样式**: Tailwind CSS
-- **国际化**: next-intl
-- **动画**: Framer Motion
-- **图表**: Recharts
-- **图标**: Lucide React
+The project is initiated by the Artificial Intelligence Innovation Research Center at the Yangtze Delta Region Institute of Tsinghua University, Zhejiang.
 
-## 开发
+## What This Project Provides
 
-### 安装依赖
+- **AI best-practice arena**: curated implementation cases for real business and operational scenarios.
+- **End-to-end implementation guidance**: scenario descriptions, architecture notes, workflow design, technical configuration, and reusable implementation references.
+- **Bilingual content**: Chinese and English pages powered by `next-intl`.
+- **Static deployment support**: optimized for Cloudflare Pages, GitHub Pages, and other static hosting platforms.
+- **Open content pipeline**: source materials live under `Content/`, with scripts for generating structured static data.
+
+## Website Sections
+
+- **Home**: project overview, value proposition, featured AI practices, and entry points.
+- **Arena**: searchable best-practice cases covering industries, task types, verification status, highlights, implementation details, and technical configuration.
+- **Framework**: RWAI-S framework, including task-set formalization, contextual alignment, human-in-the-loop, and human-AI symbiosis concepts.
+- **About**: project background, initiating team, partners, and contact information.
+- **FAQ**: common questions about project scope, participation, and reuse.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Internationalization**: next-intl
+- **UI and animation**: Framer Motion, Radix UI, Lucide React
+- **Charts**: Recharts
+- **Content processing**: Markdown, JSON, XLSX, custom sync scripts
+
+## Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 启动开发服务器
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-访问 http://localhost:3000
+Open:
 
-### 构建生产版本
+```text
+http://localhost:3000
+```
+
+## Common Commands
 
 ```bash
+# Start local development
+npm run dev
+
+# Generate static JSON data from content files
+npm run export-static-data
+
+# Build the Next.js app
+npm run build
+
+# Build after syncing content
+npm run build:sync
+
+# Run lint checks
+npm run lint
+
+# Preview static export output
+npm run start:static
+```
+
+## Static Build
+
+This project supports static export through the `STATIC_EXPORT` environment variable. For static hosting, run:
+
+```bash
+STATIC_EXPORT=1 npm run export-static-data
+STATIC_EXPORT=1 npm run build
+```
+
+The exported site is generated in:
+
+```text
+out/
+```
+
+For local static preview:
+
+```bash
+npm run start:static
+```
+
+## Cloudflare Pages Deployment
+
+Recommended Cloudflare Pages settings:
+
+```text
+Framework preset: Next.js (Static HTML Export)
+Build command: npm run export-static-data && npm run build
+Build output directory: out
+Root directory: /
+Node.js version: 20
+```
+
+Environment variables:
+
+```text
+STATIC_EXPORT=1
+NEXT_BASE_PATH=
+NEXT_PUBLIC_BASE_PATH=
+```
+
+`NEXT_BASE_PATH` and `NEXT_PUBLIC_BASE_PATH` should usually stay empty on Cloudflare Pages because the site is served from the domain root.
+
+## GitHub Pages Deployment
+
+The repository also includes `.github/workflows/deploy.yml` for GitHub Pages static deployment. It runs on pushes to `main` and can also be triggered manually from GitHub Actions.
+
+For GitHub Pages project-site deployment, the workflow sets the required base path automatically.
+
+## Content Structure
+
+```text
+Content/
+├── Homepage/              # Homepage source content
+├── About/                 # About page source content
+├── FAQ/                   # FAQ source content
+├── Framework/             # Framework page source content
+├── Arena/
+│   ├── List of Arenas.*   # Arena index source files
+│   ├── page.*.json        # Arena page structured content
+│   └── All Arenas/        # Individual arena case content
+└── Partners/              # Partner logos and images
+```
+
+Generated static data is written to:
+
+```text
+public/data/
+├── arenas.json
+└── arena-content.json
+```
+
+## Project Structure
+
+```text
+app/                       # Next.js App Router pages
+components/                # Layout, UI, and visual components
+i18n/                      # next-intl request configuration
+lib/                       # Content loading, static data, types, utilities
+locales/                   # UI translation dictionaries
+public/                    # Public assets and generated static data
+scripts/                   # Content sync and validation scripts
+Content/                   # Source content and arena materials
+PRD/                       # Product, design, QA, and workflow documents
+```
+
+## Content Update Workflow
+
+When arena content or page copy changes:
+
+```bash
+npm run export-static-data
 npm run build
 ```
 
-静态导出产物目录为 `out/`，可直接部署到 GitHub Pages 或任意静态托管平台。
+Before publishing, check the generated files under `public/data/` and verify the static build.
 
-## GitHub Actions 一键部署
+## Contributing
 
-已提供工作流文件：`.github/workflows/deploy.yml`  
-触发方式：
-- 推送到 `main` 自动部署
-- 在 GitHub Actions 页面手动点击 `Run workflow` 一键部署
+Contributions are welcome in the following areas:
 
-### 1. 首次配置
+- New real-world AI implementation cases
+- Improvements to arena content and evaluation dimensions
+- UI, accessibility, and internationalization improvements
+- Content pipeline and deployment improvements
+- Documentation fixes
 
-在仓库 `Settings -> Pages` 中：
-- `Source` 选择 `GitHub Actions`
+Please keep contributions focused on practical, reproducible AI implementation knowledge.
 
-无需配置服务器 SSH/PM2 Secrets。
+## Contact
 
-### 2. 部署执行逻辑
+For cooperation, feedback, or contribution discussions, contact:
 
-工作流会自动执行：
-
-```bash
-npm ci
-npm run build
+```text
+xuyuyao@tsinghua-zj.edu.cn
 ```
 
-然后把 `out/` 目录发布到 GitHub Pages。
+## License
 
-### 3. 静态数据来源
-
-数据直接从 `Content/Arena/` 目录下的 CSV 和 JSON 文件读取：
-
-- `Content/Arena/List of Arenas ZH.csv` - 擂台基础信息（中文）
-- `Content/Arena/List of Arenas EN.csv` - 擂台基础信息（英文）
-- `Content/Arena/All Arenas/{folder}/overview.zh.json` - 中文概览
-- `Content/Arena/All Arenas/{folder}/overview.en.json` - 英文概览
-- `Content/Arena/All Arenas/{folder}/implementation.zh.json` - 中文实施方案
-- `Content/Arena/All Arenas/{folder}/implementation.en.json` - 英文实施方案
-- `Content/Arena/All Arenas/{folder}/tech-configuration.zh.json` - 中文技术配置
-- `Content/Arena/All Arenas/{folder}/tech-configuration.en.json` - 英文技术配置
-
-## 项目结构
-
-```
-├── app/
-│   └── [locale]/          # 国际化路由
-│       ├── layout.tsx     # 布局
-│       ├── page.tsx       # 首页
-│       └── arena/         # Arena页面
-├── components/
-│   ├── layout/           # 布局组件
-│   └── ui/               # UI组件
-├── lib/
-│   ├── types.ts          # 类型定义
-│   └── utils.ts          # 工具函数
-├── locales/
-│   ├── en.json           # 英文翻译
-│   └── zh.json           # 中文翻译
-├── Content/              # 内容文件
-└── PRD/                  # 设计文档
-```
-
-## 特性
-
-- ✅ 双语支持（中英）
-- ✅ 响应式设计
-- ✅ 现代化UI
-- ✅ 可访问性
-- ✅ SEO友好
-- ✅ 类型安全
-
+License information will be provided by the project maintainers. Before commercial reuse, please confirm the applicable license and usage terms with the maintainers.
