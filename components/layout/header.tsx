@@ -21,6 +21,8 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const withBasePath = (path: string) => `${basePath}${path}`;
 
   const switchLocale = (newLocale: string) => {
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
@@ -32,7 +34,7 @@ export function Header() {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center">
-          <a href={`/${locale}`} className="text-2xl font-bold text-primary">
+          <a href={withBasePath(`/${locale}`)} className="text-2xl font-bold text-primary">
             RWAI Arena
           </a>
         </div>
@@ -44,7 +46,7 @@ export function Header() {
             return (
               <a
                 key={item.key}
-                href={`/${locale}${item.href}`}
+                href={withBasePath(`/${locale}${item.href}`)}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-text-primary',
                   isActive
@@ -66,13 +68,13 @@ export function Header() {
               onClick={() => switchLocale(locale === 'en' ? 'zh' : 'en')}
               className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
             >
-              {locale === 'en' ? 'EN' : '中文'}
+              {locale === 'en' ? '中文' : 'EN'}
             </button>
           </div>
 
           {/* GitHub Link */}
           <a
-            href="https://github.com/THU-ZJAI/Real-World-AI"
+            href="https://github.com/THU-ZJAI/Real-World-AI_Source"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
@@ -104,7 +106,7 @@ export function Header() {
               return (
                 <a
                   key={item.key}
-                  href={`/${locale}${item.href}`}
+                  href={withBasePath(`/${locale}${item.href}`)}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
                     'block py-2 text-base font-medium transition-colors',
@@ -125,7 +127,7 @@ export function Header() {
                 {locale === 'en' ? '中文' : 'EN'}
               </button>
               <a
-                href="https://github.com/THU-ZJAI/Real-World-AI"
+                href="https://github.com/THU-ZJAI/Real-World-AI_Source"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-base font-medium text-text-secondary hover:text-text-primary"

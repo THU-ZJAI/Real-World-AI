@@ -6,11 +6,9 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { arenas, categories, industries } from '@/lib/data';
+import { categories, industries } from '@/lib/arena-taxonomy';
 import type { Arena } from '@/lib/types';
 import { Shield, Trophy, Filter, ArrowUpDown, ArrowUp, ArrowDown, Code2, Search, Check, Zap, Star, DollarSign } from 'lucide-react';
-
-export const dynamic = 'force-dynamic';
 
 type SortField = 'name' | 'status' | 'category' | 'industry' | 'speed' | 'quality' | 'security' | 'cost';
 type SortOrder = 'asc' | 'desc';
@@ -183,9 +181,10 @@ interface ArenaClientProps {
   params: Promise<{ locale: string }>;
   pageTitle: string;
   pageSubtitle: string;
+  arenas: Arena[];
 }
 
-export default function ArenaClient({ params, pageTitle, pageSubtitle }: ArenaClientProps) {
+export default function ArenaClient({ params, pageTitle, pageSubtitle, arenas }: ArenaClientProps) {
   const { locale } = use(params);
   const searchParams = useSearchParams();
   const t = useTranslations('arena');
@@ -679,7 +678,6 @@ export default function ArenaClient({ params, pageTitle, pageSubtitle }: ArenaCl
                             ) : null}
                             {/* Challenger/攻擂中 Info */}
                             {(isChina ? arena.challenger : arena.challengerEn) &&
-                            (isChina ? arena.challenger : arena.challengerEn) !== '寻找攻擂者' &&
                             (isChina ? arena.challenger : arena.challengerEn).trim() !== '' ? (
                               <div className="mb-2.5 p-2 bg-gradient-to-r from-purple-50/50 to-blue-50/50 rounded-lg border border-purple-100/60">
                                 <div className="flex items-center gap-2 text-sm whitespace-nowrap">

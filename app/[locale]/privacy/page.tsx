@@ -3,13 +3,12 @@
 import { Shield, Eye, Mail, Cookie } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
-export const dynamic = 'force-dynamic';
 
 export default function PrivacyPolicyPage() {
   const locale = useLocale();
   const isChina = locale === 'zh';
 
-  const lastUpdated = isChina ? '2025年1月30日' : 'January 30, 2025';
+  const lastUpdated = isChina ? '2026年1月30日' : 'January 30, 2026';
 
   return (
     <div className="w-full">

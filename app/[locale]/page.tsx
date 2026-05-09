@@ -1,5 +1,5 @@
 import { Button, Badge } from '@/components/ui';
-import { arenas, industries, categories } from '@/lib/data';
+import { industries, categories } from '@/lib/arena-taxonomy';
 import { Arena } from '@/lib/types';
 import { CheckCircle2, Trophy, Star, ArrowRight, Building2, ShoppingCart, GraduationCap, HeartPulse, Zap, Factory, Building, Target, Users, Code2, Layers, FlaskRound, Copy, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { ParticlesBackground } from '@/components/effects/particles-background';
 import { ParticleNebulaBackground } from '@/components/effects/particle-nebula-background';
 import { FeaturedArenasShowcase, FeaturedArenasShowcaseSkeleton } from '@/components/featured-arenas-showcase';
+import { getAllArenasFromStaticData, getHomepageDisplayArenaIdsFromStaticData } from '@/lib/static-data';
 
 // Helper function to get localized labels (fallback to content files for consistency)
 function getLabel(locale: string, key: string): string {
@@ -448,15 +449,17 @@ async function ValuePropSection({ locale }: { locale: string }) {
  * Partners Logo Carousel Section
  */
 async function PartnersCarouselSection({ locale }: { locale: string }) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const withBasePath = (path: string) => `${basePath}${path}`;
   const partners = [
-    { id: '1', name: 'Partner 1', logo: '/partners/logo1.png' },
-    { id: '2', name: 'Partner 2', logo: '/partners/logo2.png' },
-    { id: '3', name: 'Partner 3', logo: '/partners/logo3.png' },
-    { id: '4', name: 'Partner 4', logo: '/partners/logo4.png' },
-    { id: '5', name: 'Partner 5', logo: '/partners/logo5.png' },
-    { id: '6', name: 'Partner 6', logo: '/partners/logo6.png' },
-    { id: '7', name: 'Partner 7', logo: '/partners/logo7.jpg' },
-    { id: '8', name: 'Partner 8', logo: '/partners/logo8.jpg' },
+    { id: '1', name: 'Partner 1', logo: withBasePath('/partners/logo1.png') },
+    { id: '2', name: 'Partner 2', logo: withBasePath('/partners/logo2.png') },
+    { id: '3', name: 'Partner 3', logo: withBasePath('/partners/logo3.png') },
+    { id: '4', name: 'Partner 4', logo: withBasePath('/partners/logo4.png') },
+    { id: '5', name: 'Partner 5', logo: withBasePath('/partners/logo5.png') },
+    { id: '6', name: 'Partner 6', logo: withBasePath('/partners/logo6.png') },
+    { id: '7', name: 'Partner 7', logo: withBasePath('/partners/logo7.jpg') },
+    { id: '8', name: 'Partner 8', logo: withBasePath('/partners/logo8.jpg') },
   ];
 
   return (
@@ -545,16 +548,12 @@ async function FeaturedArenasSection({ locale }: { locale: string }) {
   }
   const parsed = parseHomepageSectionContent(contentFile.content);
 
-  // Read configuration from markdown
-  const arenaIdsStr = parsed['Arena IDs'] || '';
-
-  // Parse arena IDs
-  const arenaIds = arenaIdsStr.split(',').map((id: string) => id.trim()).filter((id: string) => id);
-
-  // Filter arenas by IDs (check both id and folderId for backwards compatibility)
-  const featuredArenas = arenaIds.length > 0
-    ? arenas.filter(arena => arenaIds.includes(arena.id) || arenaIds.includes(arena.folderId))
-    : arenas.slice(0, 3);
+  const arenas = await getAllArenasFromStaticData();
+  const homepageDisplayArenaIds = await getHomepageDisplayArenaIdsFromStaticData();
+  const arenaById = new Map(arenas.map((arena) => [arena.id, arena]));
+  const featuredArenas = homepageDisplayArenaIds
+    .map((arenaId) => arenaById.get(arenaId))
+    .filter((arena): arena is Arena => Boolean(arena));
 
   const title = parsed['Title'];
   const subtitle = parsed['Subtitle'];
@@ -786,7 +785,7 @@ async function FinalCtaSection({ locale }: { locale: string }) {
             <Link href={`/${locale}/arena`}>{primaryButton}</Link>
           </Button>
           <Button size="large" variant="secondary" className="border-white text-white hover:bg-white/10" asChild>
-            <a href="https://github.com/THU-ZJAI/Real-World-AI" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/THU-ZJAI/Real-World-AI_Source" target="_blank" rel="noopener noreferrer">
               {secondaryButton}
             </a>
           </Button>

@@ -34,9 +34,14 @@ export interface Arena {
   challengerEn: string;  // Challenger - 英文
   highlights: string;    // 亮点 - 中文
   highlightsEn: string;  // Highlights - 英文
+  relatedReferences?: string; // 关联引用 - 中文
+  relatedReferencesEn?: string; // Related references - 英文
   metrics: Metrics;
   githubStars?: number; // GitHub stars count
   videoFile?: string;   // Video file name for featured arenas showcase
+  videoUrlZh?: string;  // Video URL for zh locale
+  videoUrlGlobal?: string; // Video URL for non-zh locales
+  videoCoverImageUrl?: string; // Video cover image URL from Content/Arena/page.common.json
   hasContent?: boolean; // Whether the arena has full content files (overview, requirements, etc.)
 }
 

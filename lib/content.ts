@@ -1,9 +1,14 @@
 import fs from 'fs';
 import path from 'path';
+import { getArenaContentFromStaticData, type ArenaContentValue } from '@/lib/static-data';
 
 export interface ContentFile {
   content: string;
   frontmatter?: Record<string, any>;
+}
+
+export interface ArenaContentFile {
+  content: ArenaContentValue;
 }
 
 /**
@@ -22,16 +27,12 @@ export async function getContentFile(
     const contentDir = path.join(process.cwd(), 'Content', contentType);
     const filePath = path.join(contentDir, `${fileName}.${locale}.md`);
 
-    console.log(`[getContentFile] Looking for: ${filePath}`);
-
     // Check if file exists
     if (!fs.existsSync(filePath)) {
-      console.error(`[getContentFile] File not found: ${filePath}`);
       return null;
     }
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    console.log(`[getContentFile] Found file, content length: ${content.length}`);
 
     // Parse frontmatter if exists (between first --- and second ---)
     let frontmatter: Record<string, any> | undefined;
@@ -94,8 +95,35 @@ export async function getArenaContent(
   arenaId: string,
   pageType: string,
   locale: string
-): Promise<ContentFile | null> {
-  return getContentFile(`Arena/All Arenas/${arenaId}`, pageType, locale);
+): Promise<ArenaContentFile | null> {
+  if (pageType === 'overview' || pageType === 'implementation' || pageType === 'tech-configuration') {
+    const normalizedLocale = locale === 'zh' ? 'zh' : 'en';
+    const tabJsonPath = path.join(
+      process.cwd(),
+      'Content',
+      'Arena',
+      'All Arenas',
+      arenaId,
+      `${pageType}.${normalizedLocale}.json`
+    );
+
+    if (fs.existsSync(tabJsonPath)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(tabJsonPath, 'utf-8')) as ArenaContentValue;
+        if (parsed && typeof parsed === 'object') {
+          return { content: parsed };
+        }
+      } catch (error) {
+        console.error(`[getArenaContent] Failed to parse tab JSON: ${tabJsonPath}`, error);
+      }
+    }
+  }
+
+  const exportedContent = await getArenaContentFromStaticData(arenaId, pageType, locale);
+  if (exportedContent) {
+    return { content: exportedContent };
+  }
+  return null;
 }
 
 /**

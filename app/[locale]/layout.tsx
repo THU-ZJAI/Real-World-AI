@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import { Manrope, Noto_Sans_SC, IBM_Plex_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { Header, Footer } from '@/components/layout';
 import { FloatingCTA } from '@/components/floating-cta';
-import '../globals.css';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -25,6 +24,12 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 });
 
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'zh' }];
+}
+
 export const metadata: Metadata = {
   title: 'RWAI Arena - Real-World AI Best Practices',
   description: 'Find the best AI solutions for your real-world business scenarios. Verified, open-source, production-ready.',
@@ -38,20 +43,17 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const messages = await getMessages();
+  setRequestLocale(locale);
+  const messages = (await import(`../../locales/${locale}.json`)).default;
 
   return (
-    <html lang={locale}>
-      <body className={`${manrope.variable} ${notoSansSC.variable} ${ibmPlexMono.variable}`}>
-        <NextIntlClientProvider messages={messages}>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <FloatingCTA locale={locale} />
-          </div>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <div className={`${manrope.variable} ${notoSansSC.variable} ${ibmPlexMono.variable} min-h-screen flex flex-col`}>
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <FloatingCTA locale={locale} />
+      </div>
+    </NextIntlClientProvider>
   );
 }

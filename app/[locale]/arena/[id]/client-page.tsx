@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Arena } from '@/lib/types';
+import { VideoPlayOverlay } from '@/components/ui/video-play-overlay';
+import { getBilibiliEmbedUrl, getYouTubeEmbedUrl, isBilibiliUrl, isYouTubeUrl } from '@/lib/video-platform';
 import {
   BarChart3,
   ArrowLeft,
@@ -30,13 +32,57 @@ import {
   ExternalLink,
   Code,
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import { motion } from 'framer-motion';
 
 type TabType = 'overview' | 'implementation' | 'tech-configuration';
+type TechConfigurationSubsection = {
+  title: string;
+  content: string[];
+};
+type TechConfigurationStep = {
+  number: number;
+  title: string;
+  subsections: TechConfigurationSubsection[];
+};
+type TechConfigurationPayload = {
+  markdown?: string;
+  steps?: TechConfigurationStep[];
+  [key: string]: unknown;
+};
+type OverviewSubsection = {
+  title?: string;
+  content: string[];
+};
+type OverviewSection = {
+  title: string;
+  subsections: OverviewSubsection[];
+};
+type OverviewPayload = {
+  highlight?: string;
+  industry?: string;
+  category?: string;
+  cycle?: string;
+  case_no?: string;
+  sections?: OverviewSection[];
+  markdown?: string;
+  [key: string]: unknown;
+};
+type ImplementationSubsection = {
+  title: string;
+  content: string[];
+};
+type ImplementationPhase = {
+  number: number;
+  title: string;
+  subsections: ImplementationSubsection[];
+};
+type ImplementationPayload = {
+  phases?: ImplementationPhase[];
+  markdown?: string;
+  [key: string]: unknown;
+};
+type ArenaTabContent = string | TechConfigurationPayload | OverviewPayload | ImplementationPayload;
 
 // Metric value to star rating
 const metricToStars: Record<string, number> = {
@@ -114,17 +160,176 @@ function extractTimeFromDescription(description: string): string {
   return '';
 }
 
+function getNormalizedDependencies(stackText: string): string {
+  if (!stackText) return 'N/A';
+
+  const withoutDeploymentPrefix = stackText.replace(/^[^:：]{1,40}[:：]\s*/, '');
+  const rawParts = withoutDeploymentPrefix
+    .split('+')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  const normalizedParts = rawParts
+    .flatMap((part) => part.split('/').map((item) => item.trim()).filter(Boolean))
+    .map((item) => {
+      const withoutParen = item.replace(/（[^）]*）|\([^)]*\)/g, '').trim();
+      const withoutVersionSuffix = withoutParen
+        .replace(/\s+v?\d+(?:\.\d+)*(?:\s*(?:pro|max|mini|turbo|lite|plus))?$/i, '')
+        .replace(/-\d+(?:\.\d+)*$/i, '')
+        .trim();
+      return withoutVersionSuffix.replace(/\s{2,}/g, ' ');
+    })
+    .filter(Boolean);
+
+  const uniqueParts: string[] = [];
+  const seen = new Set<string>();
+  for (const part of normalizedParts) {
+    const key = part.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueParts.push(part);
+    }
+  }
+
+  return uniqueParts.length > 0 ? uniqueParts.join(' · ') : 'N/A';
+}
+
+type RelatedReferenceItem = {
+  label: string;
+  href: string;
+};
+
+function parseRelatedReferencesWithLinks(raw: string | undefined): RelatedReferenceItem[] {
+  if (!raw) return [];
+
+  const items = raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.replace(/^[-•]\s*/, ''));
+
+  return items
+    .map((line) => {
+      const urlMatch = line.match(/https?:\/\/\S+/i);
+      if (!urlMatch) return null;
+
+      const href = urlMatch[0].replace(/[),.;，。；]+$/, '');
+      const rawLabel = line.slice(0, urlMatch.index).replace(/[:：]\s*$/, '').trim();
+      const label = rawLabel || href;
+
+      return { label, href };
+    })
+    .filter((item): item is RelatedReferenceItem => item !== null);
+}
+
 interface ArenaDetailClientProps {
   arena: Arena;
   locale: string;
   arenaId: string;
-  initialContent: { [key: string]: string };
+  initialContent: { [key: string]: ArenaTabContent };
   hasContent: boolean;
 }
 
-export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasContent }: ArenaDetailClientProps) {
+function ContentUploadingPlaceholder({ locale }: { locale: string }) {
+  return (
+    <div className="text-center py-20">
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 mb-6">
+        <Settings className="h-10 w-10 text-blue-500" />
+      </div>
+      <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        {locale === 'zh' ? '内容上传中' : 'Content Uploading'}
+      </h2>
+      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        {locale === 'zh'
+          ? '我们正在为这个AI实践案例准备详细的内容文档，包括实施指南、需求文档、验证报告等。敬请期待！'
+          : 'We are preparing detailed content documentation for this AI practice case, including implementation guides and more. Stay tuned!'
+        }
+      </p>
+    </div>
+  );
+}
+
+function isTabContentReady(content?: ArenaTabContent): boolean {
+  if (!content) return false;
+
+  if (typeof content === 'object') {
+    // Check for tech-configuration steps
+    const steps = Array.isArray(content.steps) ? content.steps : [];
+    if (steps.length > 0) return true;
+    // Check for overview sections
+    const sections = Array.isArray(content.sections) ? content.sections : [];
+    if (sections.length > 0) return true;
+    // Check for implementation phases
+    const phases = Array.isArray(content.phases) ? content.phases : [];
+    if (phases.length > 0) return true;
+    // Check for markdown fallback
+    const markdown = typeof content.markdown === 'string' ? content.markdown : '';
+    return markdown.trim().length > 0;
+  }
+
+  const normalized = content.replace(/\s+/g, ' ').trim();
+  if (!normalized) return false;
+
+  const placeholderPatterns = [
+    /待补充/,
+    /内容上传中/,
+    /敬请期待/,
+    /coming soon/i,
+    /stay tuned/i,
+    /\bto be added\b/i,
+    /\btbd\b/i,
+  ];
+
+  // Short placeholder templates should be treated as empty content.
+  if (normalized.length <= 500 && placeholderPatterns.some((pattern) => pattern.test(normalized))) {
+    return false;
+  }
+
+  return true;
+}
+
+export function ArenaDetailClient({ arena, locale, arenaId: _arenaId, initialContent, hasContent }: ArenaDetailClientProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [isVideoActivated, setIsVideoActivated] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const content = initialContent;
+  const isChina = locale === 'zh';
+  const isVerified = arena.verificationStatus === '已验证';
+  const statusLabel = isVerified
+    ? (isChina ? '已验证' : 'Verified')
+    : (isChina ? '验证中' : 'In Verification');
+  const statusBadgeClassName = isVerified
+    ? 'bg-amber-50 text-amber-700 ring-amber-600/20'
+    : 'bg-amber-50/50 text-amber-700/70 ring-amber-600/10';
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const withBasePath = (path: string) => `${basePath}${path}`;
+  const hasArenaSnapshot =
+    Boolean(arena.highlights || arena.highlightsEn || arena.champion || arena.championEn || arena.industry || arena.industryEn);
+  const readMarkdown = (tabContent?: ArenaTabContent): string => {
+    if (!tabContent) return '';
+    if (typeof tabContent === 'string') return tabContent;
+    return typeof tabContent.markdown === 'string' ? tabContent.markdown : '';
+  };
+
+  const renderActiveTabContent = () => {
+    if (activeTab === 'overview' && isTabContentReady(content.overview)) {
+      return <OverviewSection arena={arena} content={content.overview} locale={locale} activeTab={activeTab} setActiveTab={(tab) => setActiveTab(tab as TabType)} />;
+    }
+    if (activeTab === 'implementation' && isTabContentReady(content.implementation)) {
+      return (
+        <ImplementationSection
+          content={content.implementation!}
+          locale={locale}
+        />
+      );
+    }
+    if (activeTab === 'tech-configuration' && isTabContentReady(content['tech-configuration'])) {
+      return <TechConfigurationSection content={content['tech-configuration']} locale={locale} />;
+    }
+    return <ContentUploadingPlaceholder locale={locale} />;
+  };
 
   // Handle URL hash for direct tab linking
   useEffect(() => {
@@ -152,6 +357,43 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
     speed: arena.metrics?.speed || '较快',
     cost: arena.metrics?.cost || '较优',
     security: arena.metrics?.security || '较高',
+  };
+  const videoUrl = (isChina ? (arena.videoUrlZh || '') : (arena.videoUrlGlobal || '')).trim();
+  const videoCoverImageUrl = (arena.videoCoverImageUrl || '').trim();
+  const hasVideo = Boolean(videoUrl);
+  const isBilibiliVideo = hasVideo && isBilibiliUrl(videoUrl);
+  const isYouTubeVideo = hasVideo && isYouTubeUrl(videoUrl);
+  const bilibiliEmbedUrl = isBilibiliVideo ? getBilibiliEmbedUrl(videoUrl) : null;
+  const youTubeEmbedUrl = isYouTubeVideo ? getYouTubeEmbedUrl(videoUrl) : null;
+
+  useEffect(() => {
+    if (!hasVideo || !isVideoActivated) {
+      return;
+    }
+
+    const videoEl = videoRef.current;
+    if (!videoEl) {
+      return;
+    }
+
+    videoEl.muted = true;
+    videoEl.load();
+    const playPromise = videoEl.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        setVideoLoading(false);
+      });
+    }
+  }, [hasVideo, isVideoActivated]);
+
+  const activateVideoPlayback = () => {
+    if (!hasVideo || isBilibiliVideo || isYouTubeVideo) {
+      return;
+    }
+
+    setVideoError(false);
+    setVideoLoading(true);
+    setIsVideoActivated(true);
   };
 
   return (
@@ -188,15 +430,15 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
               <div className="lg:col-span-2 flex flex-col justify-between">
                 {/* Title with inline status badges */}
                 <div className="mb-4">
-                  <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <div className="mb-3">
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
                       {arena.title[locale as keyof typeof arena.title] || arena.title.zh}
                     </h1>
-                    {/* Status and Contact Badges - Inline with title */}
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                        <Trophy className="h-3.5 w-3.5 mr-1" />
-                        {locale === 'zh' ? '已验证' : 'Verified'}
+                    {/* Status and Contact Badges */}
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ring-1 ring-inset ${statusBadgeClassName}`}>
+                        <Trophy className={`h-3.5 w-3.5 mr-1 ${isVerified ? '' : 'opacity-70'}`} />
+                        {statusLabel}
                       </span>
                       <Link
                         href={'/' + locale + '/about'}
@@ -210,7 +452,7 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
 
                   {/* Champion/擂主 Info */}
                   {(locale === 'zh' ? arena.champion : arena.championEn) && (
-                    <div className="mb-2 inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+                    <div className="mb-2 flex w-full items-start gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
                       <Trophy className="h-4 w-4 text-purple-600 flex-shrink-0" />
                       <span className="font-semibold text-purple-900 text-sm">
                         {locale === 'zh' ? '擂主' : 'Champion'}:
@@ -222,8 +464,8 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
                   {/* Challenger/攻擂中 Info */}
                   {(() => {
                     const challenger = locale === 'zh' ? arena.challenger : arena.challengerEn;
-                    return challenger && challenger !== '寻找攻擂者' && challenger.trim() !== '' ? (
-                      <div className="mb-3 inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50/50 to-blue-50/50 rounded-lg border border-purple-100/60">
+                    return challenger && challenger.trim() !== '' ? (
+                      <div className="mb-3 flex w-full items-start gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50/50 to-blue-50/50 rounded-lg border border-purple-100/60">
                         <Trophy className="h-4 w-4 text-purple-400 flex-shrink-0" />
                         <span className="font-semibold text-purple-700 text-sm">
                           {locale === 'zh' ? '攻擂中' : 'Challenger'}:
@@ -287,17 +529,136 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
               {/* Right Column (60%): Demo Video */}
               <div className="lg:col-span-3">
                 <div className="relative h-[300px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl border border-slate-700/50">
-                  <video
-                    className="w-full h-full object-contain"
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                  >
-                    <source src={'/videos/' + (arena.videoFile || arena.folderId + '.mp4')} type="video/mp4" />
-                    {locale === 'zh' ? '您的浏览器不支持视频播放' : 'Your browser does not support the video tag.'}
-                  </video>
+                  {hasVideo ? (
+                    videoError ? (
+                      <div className="w-full h-full bg-black flex items-center justify-center text-white p-8">
+                        <div className="text-center">
+                          <svg className="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-lg mb-2">
+                            {locale === 'zh' ? '视频加载失败' : 'Video Failed to Load'}
+                          </p>
+                          <p className="text-sm text-gray-400">{locale === 'zh' ? '演示视频正在准备中' : 'Demo video coming soon'}</p>
+                        </div>
+                      </div>
+                    ) : isBilibiliVideo ? (
+                      bilibiliEmbedUrl ? (
+                        <iframe
+                          src={bilibiliEmbedUrl}
+                          className="w-full h-full"
+                          allow="autoplay; fullscreen"
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          title={locale === 'zh' ? '哔哩哔哩视频' : 'Bilibili video'}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-black flex items-center justify-center text-white p-8">
+                          <div className="text-center">
+                            <p className="text-lg mb-2">
+                              {locale === 'zh' ? 'Bilibili 链接格式暂不支持' : 'Unsupported Bilibili URL format'}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              {locale === 'zh' ? '请使用 bilibili.com/video/BV... 链接' : 'Please use a bilibili.com/video/BV... link'}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    ) : isYouTubeVideo ? (
+                      youTubeEmbedUrl ? (
+                        <iframe
+                          src={youTubeEmbedUrl}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          title={locale === 'zh' ? 'YouTube 视频' : 'YouTube video'}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-black flex items-center justify-center text-white p-8">
+                          <div className="text-center">
+                            <p className="text-lg mb-2">
+                              {locale === 'zh' ? 'YouTube 链接格式暂不支持' : 'Unsupported YouTube URL format'}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              {locale === 'zh' ? '请使用 youtube.com/watch?v=... 或 youtu.be/... 链接' : 'Please use a youtube.com/watch?v=... or youtu.be/... link'}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    ) : !isVideoActivated ? (
+                      <VideoPlayOverlay
+                        className="h-full"
+                        coverImageUrl={videoCoverImageUrl}
+                        coverAlt={locale === 'zh' ? '视频封面' : 'Video cover'}
+                        ariaLabel={locale === 'zh' ? '播放演示视频' : 'Play demo video'}
+                        onClick={activateVideoPlayback}
+                      />
+                    ) : (
+                      <video
+                        ref={videoRef}
+                        className="w-full h-full object-contain"
+                        controls
+                        loop={false}
+                        muted
+                        preload="none"
+                        playsInline
+                        onError={() => {
+                          setVideoError(true);
+                          setVideoLoading(false);
+                        }}
+                        onPlaying={() => {
+                          setVideoLoading(false);
+                        }}
+                        onLoadedMetadata={() => {
+                          setVideoLoading(false);
+                        }}
+                        onCanPlay={() => {
+                          setVideoError(false);
+                          setVideoLoading(false);
+                        }}
+                        onLoadedData={() => {
+                          setVideoLoading(false);
+                        }}
+                      >
+                        {isVideoActivated ? <source src={videoUrl} type="video/mp4" /> : null}
+                        {locale === 'zh' ? '您的浏览器不支持视频播放' : 'Your browser does not support the video tag.'}
+                      </video>
+                    )
+                  ) : (
+                    <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-[#07142d] via-[#0a2651] to-[#192f67]">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(139,180,255,0.18),transparent_44%),radial-gradient(circle_at_78%_76%,rgba(132,116,255,0.14),transparent_46%)]" />
+                      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:28px_28px] opacity-[0.16]" />
+                      <div className="absolute -left-1/4 top-0 h-full w-2/3 bg-gradient-to-r from-transparent via-white/8 to-transparent blur-2xl opacity-40" />
+
+                      <div className="absolute top-4 left-4 z-10">
+                        <span className="inline-flex items-center rounded-full border border-blue-200/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-blue-100/85 backdrop-blur-sm">
+                          {locale === 'zh' ? '方案演示' : 'Solution Demo'}
+                        </span>
+                      </div>
+
+                      <div className="relative z-10 w-full h-full flex items-center justify-center">
+                        <div className="flex max-w-md -mt-3 flex-col items-center text-center px-6">
+                          <div className="mb-4 rounded-2xl border border-blue-100/20 bg-white/10 p-3 backdrop-blur-md shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+                            <Play className="h-5 w-5 text-blue-100/75" fill="currentColor" />
+                          </div>
+                          <p className="text-base font-semibold tracking-[0.01em] text-blue-50/95">
+                            {locale === 'zh' ? '视频制作中' : 'Video in Production'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {videoLoading && !videoError && hasVideo && isVideoActivated && !isBilibiliVideo && !isYouTubeVideo ? (
+                    <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
+                      <div className="text-white text-center">
+                        <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-3"></div>
+                        <p className="text-sm">{locale === 'zh' ? '视频加载中...' : 'Loading video...'}</p>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -348,21 +709,61 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
       {/* Main Content Area */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         {!hasContent ? (
-          // Content uploading message
-          <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 mb-6">
-              <Settings className="h-10 w-10 text-blue-500" />
+          hasArenaSnapshot ? (
+            <div className="max-w-5xl mx-auto py-6">
+              <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/60 to-indigo-50/60 p-6 sm:p-8 mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {isChina ? '已加载基础信息' : 'Base Data Available'}
+                </h2>
+                <p className="text-gray-600">
+                  {isChina
+                    ? '该擂台暂未录入完整章节内容，当前先展示已导出的基础信息。'
+                    : 'Full tab content is not available yet. Showing currently exported base fields.'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                  <h3 className="font-semibold text-gray-900 mb-3">{isChina ? '基本信息' : 'Basic Info'}</h3>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <p><span className="font-medium text-gray-900">{isChina ? '行业' : 'Industry'}:</span> {isChina ? arena.industry : arena.industryEn}</p>
+                    <p><span className="font-medium text-gray-900">{isChina ? '类别' : 'Category'}:</span> {isChina ? arena.category : arena.categoryEn}</p>
+                    <p><span className="font-medium text-gray-900">{isChina ? '状态' : 'Status'}:</span> {arena.verificationStatus}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                  <h3 className="font-semibold text-gray-900 mb-3">{isChina ? '阵容信息' : 'Lineup'}</h3>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <p><span className="font-medium text-gray-900">{isChina ? '擂主' : 'Champion'}:</span> {isChina ? arena.champion : arena.championEn}</p>
+                    {((isChina ? arena.challenger : arena.challengerEn) || '').trim() && (
+                      <p><span className="font-medium text-gray-900">{isChina ? '攻擂中' : 'Challenger'}:</span> {isChina ? arena.challenger : arena.challengerEn}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-white p-5 md:col-span-2">
+                  <h3 className="font-semibold text-gray-900 mb-3">{isChina ? '亮点' : 'Highlights'}</h3>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {isChina ? arena.highlights : arena.highlightsEn}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-white p-5 md:col-span-2">
+                  <h3 className="font-semibold text-gray-900 mb-3">{isChina ? '四维指标' : 'Metrics'}</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                    <div><span className="font-medium text-gray-900">{isChina ? '速度' : 'Speed'}:</span> {arena.metrics.speed}</div>
+                    <div><span className="font-medium text-gray-900">{isChina ? '质量' : 'Quality'}:</span> {arena.metrics.quality}</div>
+                    <div><span className="font-medium text-gray-900">{isChina ? '安全' : 'Security'}:</span> {arena.metrics.security}</div>
+                    <div><span className="font-medium text-gray-900">{isChina ? '成本' : 'Cost'}:</span> {arena.metrics.cost}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              {locale === 'zh' ? '内容上传中' : 'Content Uploading'}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {locale === 'zh'
-                ? '我们正在为这个AI实践案例准备详细的内容文档，包括实施指南、需求文档、验证报告等。敬请期待！'
-                : 'We are preparing detailed content documentation for this AI practice case, including implementation guides and more. Stay tuned!'
-              }
-            </p>
-          </div>
+          ) : (
+            // Fallback only when DB also has no usable base fields
+            <ContentUploadingPlaceholder locale={locale} />
+          )
         ) : (
           <div className="grid grid-cols-1 gap-8">
             {/* Main Content */}
@@ -373,17 +774,7 @@ export function ArenaDetailClient({ arena, locale, arenaId, initialContent, hasC
               transition={{ duration: 0.3 }}
             >
               <div className="prose prose-lg max-w-none">
-                {activeTab === 'overview' && content.overview && (
-                  <OverviewSection content={content.overview} locale={locale} activeTab={activeTab} setActiveTab={(tab) => setActiveTab(tab as TabType)} />
-                )}
-
-                {activeTab === 'implementation' && content.implementation && (
-                  <ImplementationSection content={content.implementation} locale={locale} />
-                )}
-
-                {activeTab === 'tech-configuration' && content['tech-configuration'] && (
-                  <TechConfigurationSection content={content['tech-configuration']} locale={locale} />
-                )}
+                {renderActiveTabContent()}
               </div>
             </motion.div>
           </div>
@@ -511,8 +902,9 @@ const markdownComponents = {
 };
 
 // Overview Section Component - Original Card-based design
-function OverviewSection({ content, locale, activeTab, setActiveTab }: {
-  content: string;
+function OverviewSection({ arena, content, locale, activeTab, setActiveTab }: {
+  arena: Arena;
+  content: ArenaTabContent;
   locale: string;
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -533,8 +925,50 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
     return '📄';
   };
 
-  // Parse overview content into structured sections
-  const parseContent = (text: string) => {
+  // Normalize structured sections from JSON
+  const normalizeStructuredSections = (rawSections: unknown): Array<{
+    title: string;
+    icon: string;
+    subsections: Array<{
+      title?: string;
+      icon?: string;
+      content: string[];
+    }>;
+  }> => {
+    if (!Array.isArray(rawSections)) return [];
+
+    return rawSections
+      .map((section) => {
+        const sectionObj = (section && typeof section === 'object') ? (section as Record<string, unknown>) : null;
+        const title = typeof sectionObj?.title === 'string' && sectionObj.title.trim() ? sectionObj.title.trim() : '';
+        if (!title) return null;
+
+        const rawSubsections = Array.isArray(sectionObj?.subsections) ? sectionObj.subsections : [];
+        const subsections = rawSubsections
+          .map((sub) => {
+            const subObj = (sub && typeof sub === 'object') ? (sub as Record<string, unknown>) : null;
+            const subTitle = typeof subObj?.title === 'string' ? subObj.title.trim() : undefined;
+            const subContent = Array.isArray(subObj?.content)
+              ? subObj.content.filter((item): item is string => typeof item === 'string')
+              : [];
+            return {
+              title: subTitle,
+              content: subContent,
+            };
+          })
+          .filter((item): item is NonNullable<typeof item> => item !== null);
+
+        return {
+          title,
+          icon: getSectionIcon(title),
+          subsections,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+  };
+
+  // Parse overview content into structured sections (fallback for markdown)
+  const parseContentFromMarkdown = (text: string) => {
     const lines = text.split('\n');
     const sections: {
       title: string;
@@ -617,7 +1051,27 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
     return sections;
   };
 
-  const sections = parseContent(content);
+  // Extract sections from structured data or fallback to markdown parsing
+  const sections = (() => {
+    if (typeof content === 'object' && content !== null) {
+      const overviewContent = content as OverviewPayload;
+      const structured = normalizeStructuredSections(overviewContent.sections);
+      if (structured.length > 0) {
+        return structured;
+      }
+      const markdown = typeof overviewContent.markdown === 'string' ? overviewContent.markdown : '';
+      if (markdown.trim()) {
+        return parseContentFromMarkdown(markdown);
+      }
+      return [];
+    }
+    // Fallback for string content (legacy)
+    return parseContentFromMarkdown(content as string);
+  })();
+  const includesKeyword = (value: string | undefined, keywords: string[]) => {
+    const lowerValue = (value || '').toLowerCase();
+    return keywords.some((keyword) => lowerValue.includes(keyword.toLowerCase()));
+  };
 
   // Render Business Highlights with EXTRA emphasis
   const renderBusinessHighlightsCard = (section: typeof sections[0]) => {
@@ -625,33 +1079,29 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
       return null;
     }
 
-    // Define the 4 highlights exactly as specified with semantic colors
-    const fourHighlights = [
-      {
-        title: isChina ? 'DeepResearch Bench排名第2' : 'Ranked #2 in DeepResearch Bench',
-        description: isChina ? '权威基准测试综合得分51.86，与第一名差距<1.5%' : 'Score 51.86 on authoritative benchmark, <1.5% gap from #1',
-        icon: TrendingUp,
-        semanticColor: 'yellow' // Quality/Ranking
-      },
-      {
-        title: isChina ? '减少95%手动研究工作量' : 'Reduce 95% Manual Research Workload',
-        description: isChina ? '自动化资料搜集、信息整合，大幅提升调研效率' : 'Automated data collection and integration, greatly improving efficiency',
-        icon: Zap,
-        semanticColor: 'violet' // Efficiency/Speed
-      },
-      {
-        title: isChina ? '报告≤15分钟生成' : 'Generate Reports in ≤15 Minutes',
-        description: isChina ? '快速输出高质量结构化调研文档，支持批量生成' : 'Quickly output high-quality structured research documents, support batch generation',
-        icon: Target,
-        semanticColor: 'violet' // Efficiency/Speed
-      },
-      {
-        title: isChina ? '支持开源大模型' : 'Support Open-Source LLMs',
-        description: isChina ? '节省90%成本，GLM-4.7等常见开源基座大模型' : 'Save 90% cost, support open-source models like GLM-4.7',
-        icon: DollarSign,
-        semanticColor: 'blue' // Cost/Savings
-      },
+    const rawItems = section.subsections
+      .flatMap((sub) => sub.content)
+      .map((line) => line.replace(/^-\s*/, '').replace(/\*\*/g, '').trim())
+      .filter(Boolean);
+
+    const styleSlots = [
+      { icon: TrendingUp, semanticColor: 'yellow' as const },
+      { icon: Zap, semanticColor: 'violet' as const },
+      { icon: Target, semanticColor: 'violet' as const },
+      { icon: DollarSign, semanticColor: 'blue' as const },
     ];
+
+    const fourHighlights = rawItems.slice(0, 4).map((item, idx) => {
+      const [rawTitle, ...rest] = item.split(/[:：]/);
+      const title = rawTitle?.trim() || item;
+      const description = rest.join('：').trim() || item;
+      return {
+        title,
+        description,
+        icon: styleSlots[idx].icon,
+        semanticColor: styleSlots[idx].semanticColor,
+      };
+    });
 
     // Semantic color mapping - matching Framework page exactly
     const semanticColorMap = {
@@ -842,11 +1292,9 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
       return null;
     }
 
-    // Extract deployment version from subsection title
-    const deploymentSubsection = section.subsections.find(sub =>
-      sub.title?.includes('私部署') || sub.title?.includes('部署') || sub.title?.includes('Server')
-    );
-    const deploymentVersion = deploymentSubsection?.title?.replace(/^[0-9.]+\s*/, '') || (isChina ? '私部署（服务器版）' : 'Private Deployment (Server)');
+    const normalizeLine = (line: string) => line.replace(/^-\s*/, '').replace(/\*\*/g, '').trim();
+    const findSubsection = (keywordZh: string, keywordEn: string) =>
+      section.subsections.find((sub) => (sub.title || '').includes(keywordZh) || (sub.title || '').toLowerCase().includes(keywordEn));
 
     // Extract content by keywords from subsection content
     const extractContentByKeywords = (subsection: typeof section.subsections[0] | undefined, keywords: string[]) => {
@@ -865,41 +1313,48 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
       return result;
     };
 
-    const reasonContent = extractContentByKeywords(deploymentSubsection, ['入选最佳实践理由', '最佳实践理由', '理由', '指标提升', '成本优化']);
-    const infoContent = extractContentByKeywords(deploymentSubsection, ['版本基本信息', '基本信息', '实践者信息', '原作者信息', '版本状态']);
-    const detailsContent = extractContentByKeywords(deploymentSubsection, ['实施详情', '详情']);
+    const reasonSubsection = findSubsection('入选最佳实践理由', 'best practice') || findSubsection('理由', 'reason');
+    const infoSubsection = findSubsection('版本信息', 'version') || findSubsection('版本基本信息', 'metadata');
+    const detailsSubsection = findSubsection('实施详情', 'detail');
 
-    // Fixed outcomes - hardcoded, no parsing needed, with semantic colors
-    const outcomes = [
-      {
-        title: isChina ? '效果领先' : 'Quality Leadership',
-        desc: isChina
-          ? '在 DeepResearch Bench 开源方案中排名 第 2，生成内容稳定、可信，适用于正式业务决策场景。'
-          : 'Ranked #2 on DeepResearch Bench. Stable, trustworthy output for business decisions.',
-        semanticColor: 'yellow' as const // Quality/Ranking
-      },
-      {
-        title: isChina ? '生成更快' : 'Faster Generation',
-        desc: isChina
-          ? '单篇报告 ≤15 分钟完成，显著快于同类方案（普遍 ≥20 分钟）。'
-          : '≤15 min per report, significantly faster than alternatives (typically ≥20 min).',
-        semanticColor: 'violet' as const // Efficiency/Speed
-      },
-      {
-        title: isChina ? '成本更低' : 'Lower Cost',
-        desc: isChina
-          ? '支持高性价比常用大模型（如 GLM 系列），在保持效果的前提下，整体成本降低 60%+。'
-          : 'Supports high-performance & cost-effective models (e.g., GLM series), 60%+ cost reduction while maintaining quality.',
-        semanticColor: 'blue' as const // Cost/Savings
-      },
-      {
-        title: isChina ? '企业可用' : 'Enterprise Ready',
-        desc: isChina
-          ? '模板契合度 ≥95%，格式规范度 ≥99%，可直接用于内部汇报与对外材料。'
-          : '≥95% template match, ≥99% format compliance. Ready for internal and external use.',
-        semanticColor: 'emerald' as const // Stability/Compliance
-      }
-    ];
+    const reasonContent = (reasonSubsection?.content || []).map(normalizeLine).filter(Boolean);
+    const infoContent = (infoSubsection?.content || []).map(normalizeLine).filter(Boolean);
+    const detailsContent = (detailsSubsection?.content || []).map(normalizeLine).filter(Boolean);
+    const allSectionLines = section.subsections.flatMap((sub) => sub.content).map(normalizeLine).filter(Boolean);
+
+    const isOutcomeLine = (line: string) => {
+      if (!line || line.length < 3) return false;
+      if (line.includes('http://') || line.includes('https://')) return false;
+      const noiseKeywords = [
+        '实践者信息', '原作者信息', '版本状态', '关联引用', '版本基本信息',
+        '实施详情', '指标提升', '成本优化', '补充信息', '其他优势',
+        'practitioner', 'version status', 'related references', 'implementation details'
+      ];
+      return !noiseKeywords.some((k) => line.toLowerCase().includes(k.toLowerCase()));
+    };
+
+    const fallbackReasonContent = section.subsections
+      .filter((sub) => {
+        const t = (sub.title || '').toLowerCase();
+        return !t.includes('版本信息') && !t.includes('version') && !t.includes('实施详情') && !t.includes('detail');
+      })
+      .flatMap((sub) => sub.content)
+      .map(normalizeLine)
+      .filter(isOutcomeLine);
+
+    const resolvedReasonContent = (reasonContent.filter(isOutcomeLine).length > 0
+      ? reasonContent.filter(isOutcomeLine)
+      : fallbackReasonContent);
+
+    const outcomeSlots = ['yellow', 'violet', 'blue', 'emerald'] as const;
+    const outcomes = resolvedReasonContent.slice(0, 4).map((item, idx) => {
+      const [rawTitle, ...rest] = item.split(/[:：]/);
+      return {
+        title: (rawTitle || item).trim(),
+        desc: (rest.join('：') || item).trim(),
+        semanticColor: outcomeSlots[idx],
+      };
+    });
 
     // Semantic color mapping for outcomes - matching Framework page exactly
     const outcomeColorMap = {
@@ -913,26 +1368,63 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
     const parseMetadata = (content: string[]) => {
       const metadata: { [key: string]: string } = {};
       content.forEach(c => {
-        const match = c.match(/\*\*([^*]+)\*\*:\s*(.+)/);
+        const match = c.match(/^([^:：]+)[:：]\s*(.+)$/);
         if (match) {
-          let key = match[1].replace('信息', '').replace(/称呼$/, '').trim();
-          if (key === '实践者') metadata['practitioner'] = match[2].trim();
-          else if (key === '首发日期') metadata['firstReleased'] = match[2].trim();
-          else if (key === '最近更新') metadata['lastUpdated'] = match[2].trim();
+          const key = match[1].trim().toLowerCase();
+          const value = match[2].trim();
+          if (includesKeyword(key, ['版本类型', 'version type'])) metadata['versionType'] = value;
+          else if (includesKeyword(key, ['称呼', '实践者', '团队名称', 'team name', 'practitioner', 'practitioner information'])) metadata['practitioner'] = value;
+          else if (includesKeyword(key, ['首发', '初次发布', 'first release', 'initial release date'])) metadata['firstReleased'] = value;
+          else if (includesKeyword(key, ['最近更新', 'last updated', 'last update'])) metadata['lastUpdated'] = value;
         }
       });
       return metadata;
     };
 
-    const metadata = parseMetadata(infoContent);
+    const fallbackInfoContent = allSectionLines.filter((line) => {
+      const lower = line.toLowerCase();
+      return (
+        lower.includes('团队名称') ||
+        lower.includes('team name') ||
+        lower.includes('称呼') ||
+        lower.includes('实践者') ||
+        lower.includes('practitioner') ||
+        lower.includes('版本类型') ||
+        lower.includes('version type') ||
+        lower.includes('首发') ||
+        lower.includes('first release') ||
+        lower.includes('initial release date') ||
+        lower.includes('最近更新') ||
+        lower.includes('last update') ||
+        lower.includes('last updated') ||
+        lower.includes('版本状态') ||
+        lower.includes('version status') ||
+        lower.includes('关联引用') ||
+        lower.includes('related references') ||
+        lower.includes('http://') ||
+        lower.includes('https://')
+      );
+    });
+    const resolvedInfoContent = infoContent.length > 0 ? infoContent : fallbackInfoContent;
+
+    const metadata = parseMetadata(resolvedInfoContent);
+    const deploymentVersion = metadata['versionType'] || (section.subsections[0]?.title || '')
+      .replace(/^[0-9.]+\s*/, '')
+      .trim() || (isChina ? '私部署（服务器版）' : 'Private Deployment (Server)');
     const practitioner = metadata['practitioner'] || 'Real-World AI';
-    const firstReleased = metadata['firstReleased'] || '2025-11-20';
-    const lastUpdated = metadata['lastUpdated'] || '2026-02-04';
+    const firstReleased = metadata['firstReleased'] || '-';
+    const lastUpdated = metadata['lastUpdated'] || '-';
+
+    const dependencyReferences = parseRelatedReferencesWithLinks(
+      isChina ? arena.relatedReferences : (arena.relatedReferencesEn || arena.relatedReferences)
+    );
+    const dependencies = getNormalizedDependencies(isChina ? arena.champion : arena.championEn);
 
     // Extract implementation link
-    const implementationLink = detailsContent.find(c => c.includes('http'));
+    const implementationLink = (detailsContent.length > 0 ? detailsContent : allSectionLines).find(c => c.includes('http'));
     const linkMatch = implementationLink?.match(/\[([^\]]+)\]\(([^)]+)\)/);
-    const detailLink = linkMatch ? linkMatch[2] : null;
+    const fallbackUrlMatch = implementationLink?.match(/https?:\/\/\S+/);
+    const detailLink = linkMatch ? linkMatch[2] : (fallbackUrlMatch ? fallbackUrlMatch[0] : null);
 
     return (
       <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
@@ -1032,9 +1524,25 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 shadow-sm">
                     <Code className="h-5 w-5" />
                   </div>
-                  <div className="flex-1">
-                    <div className="text-xs text-gray-500 mb-0.5">{isChina ? '关键依赖' : 'Dependencies'}</div>
-                    <div className="text-sm text-gray-900">Claude Code · Metaso MCP · GLM</div>
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500 mb-0.5">{isChina ? '关键依赖' : 'Dependencies'}</div>
+                    {dependencyReferences.length > 0 ? (
+                      <div className="space-y-1.5 pt-0.5">
+                        {dependencyReferences.map((item, idx) => (
+                          <a
+                            key={`${item.href}-${idx}`}
+                            href={item.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-sm text-gray-900 hover:text-blue-700 hover:underline underline-offset-2 leading-relaxed"
+                          >
+                            {item.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-900">{dependencies}</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1135,16 +1643,18 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
     }
 
     // Extract subsections
-    const getSubsection = (keyword: string) => {
-      return section.subsections.find(sub => sub.title?.includes(keyword));
+    const getSubsection = (...keywords: string[]) => {
+      return section.subsections.find(sub => includesKeyword(sub.title, keywords));
     };
 
-    const overview = getSubsection('概况');
-    const tags = getSubsection('分类标签');
-    const impl = getSubsection('实施周期');
-    const team = getSubsection('团队构成');
-    const painPoints = getSubsection('业务痛点');
-    const coreFunctions = getSubsection('核心功能');
+    const overview = section.subsections.find((sub) =>
+      includesKeyword(sub.title, ['2.1 概况', '2.1 overview', '概况', 'overview'])
+    );
+    const tags = getSubsection('分类标签', 'classification tags');
+    const impl = getSubsection('实施周期', 'implementation cycle');
+    const team = getSubsection('团队构成', 'team composition');
+    const painPoints = getSubsection('业务痛点', 'business pain points');
+    const coreFunctions = getSubsection('核心功能', 'core functions');
 
     // Parse content items
     const parseBulletPoints = (content: string[]) => {
@@ -1153,9 +1663,14 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
 
     // Extract overview text
     const extractOverviewText = (content: string[]) => {
-      const businessBg = content.find(c => c.includes('业务背景'));
-      const solution = content.find(c => c.includes('解决方案'));
-      return { businessBg: businessBg?.replace(/\*\*业务背景\*\*:?\s*/, '') || '', solution: solution?.replace(/\*\*解决方案\*\*:?\s*/, '') || '' };
+      const businessBackgroundPattern = /^\s*\*\*(业务背景|Business Background)\*\*\s*[:：]/i;
+      const solutionPattern = /^\s*\*\*(解决方案|Solution)\*\*\s*[:：]/i;
+      const businessBg = content.find(c => businessBackgroundPattern.test(c));
+      const solution = content.find(c => solutionPattern.test(c));
+      return {
+        businessBg: businessBg?.replace(businessBackgroundPattern, '') || '',
+        solution: solution?.replace(solutionPattern, '') || '',
+      };
     };
 
     const overviewText = overview ? extractOverviewText(overview.content) : { businessBg: '', solution: '' };
@@ -1336,7 +1851,7 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
       {sections.map((section, idx) => {
         const titleLower = section.title.toLowerCase();
 
-        // Business Highlights - Show prominently with animation
+        // Business Highlights - keep original UI style but bind current arena data
         if (titleLower.includes('business highlights') || section.title.includes('业务亮点')) {
           return (
             <motion.div
@@ -1364,7 +1879,7 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
           );
         }
 
-        // Best Practice - Special rendering
+        // Best Practice - keep original UI style but bind current arena data
         if (titleLower.includes('best practice') || section.title.includes('最佳实践')) {
           return (
             <motion.div
@@ -1410,7 +1925,13 @@ function OverviewSection({ content, locale, activeTab, setActiveTab }: {
 }
 
 // Implementation Section Component - Phase-based card design
-function ImplementationSection({ content, locale }: { content: string; locale: string }) {
+function ImplementationSection({
+  content,
+  locale,
+}: {
+  content: ArenaTabContent;
+  locale: string;
+}) {
   const isChina = locale === 'zh';
 
   // Icon mapping for phases
@@ -1431,82 +1952,149 @@ function ImplementationSection({ content, locale }: { content: string; locale: s
     return '📄';
   };
 
-  // Parse implementation content into phases
-  const parseContent = (text: string) => {
-    const lines = text.split('\n');
-    const phases: {
-      number: number;
+  // Phase type for internal use
+  type PhaseType = {
+    number: number;
+    title: string;
+    icon: string;
+    subsections: Array<{
       title: string;
       icon: string;
-      subsections: Array<{
-        title: string;
-        icon: string;
-        content: string[];
-      }>;
-    }[] = [];
+      content: string[];
+    }>;
+  };
 
-    let currentPhase: typeof phases[0] | null = null;
-    let currentSubsection: typeof phases[0]['subsections'][0] | null = null;
+  const parseContent = (tabContent: ArenaTabContent): PhaseType[] => {
+    let phases: PhaseType[] = [];
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+    // If content is already in JSON phases format
+    if (typeof tabContent === 'object' && Array.isArray(tabContent.phases)) {
+      phases = tabContent.phases.map((phase) => ({
+        number: phase.number,
+        title: phase.title,
+        icon: getPhaseIcon(phase.number),
+        subsections: phase.subsections.map((sub: ImplementationSubsection) => ({
+          title: sub.title,
+          icon: getSubsectionIcon(sub.title),
+          content: sub.content,
+        })),
+      }));
+    } else {
+      // Fallback: parse markdown format
+      const text = typeof tabContent === 'string' ? tabContent : (typeof tabContent === 'object' && tabContent.markdown) ? tabContent.markdown : '';
+      if (!text) return [];
 
-      // Skip empty lines and separators
-      if (!line || line === '---') continue;
+      const lines = text.split('\n');
 
-      // Detect phase headers (__PHASE X__)
-      const phaseMatch = line.match(/^__PHASE\s+(\d+)\s+(.+)__$/);
-      if (phaseMatch) {
-        if (currentPhase) {
+      let currentPhase: PhaseType | null = null;
+      let currentSubsection: PhaseType['subsections'][0] | null = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Skip empty lines and separators
+        if (!line || line === '---') continue;
+
+        // Detect phase headers (__PHASE X__)
+        const phaseMatch = line.match(/^__PHASE\s+(\d+)\s+(.+)__$/);
+        if (phaseMatch) {
+          if (currentPhase) {
+            if (currentSubsection) {
+              currentPhase.subsections.push(currentSubsection);
+            }
+            phases.push(currentPhase);
+          }
+          const phaseNum = parseInt(phaseMatch[1]);
+          currentPhase = {
+            number: phaseNum,
+            title: phaseMatch[2].trim(),
+            icon: getPhaseIcon(phaseNum),
+            subsections: []
+          };
+          currentSubsection = null;
+          continue;
+        }
+
+        // Detect subsection headers (__Title__)
+        const subsectionMatch = line.match(/^__(.+)__$/);
+        if (subsectionMatch && currentPhase) {
           if (currentSubsection) {
             currentPhase.subsections.push(currentSubsection);
           }
-          phases.push(currentPhase);
+          const title = subsectionMatch[1].trim();
+          currentSubsection = {
+            title,
+            icon: getSubsectionIcon(title),
+            content: []
+          };
+          continue;
         }
-        const phaseNum = parseInt(phaseMatch[1]);
-        currentPhase = {
-          number: phaseNum,
-          title: phaseMatch[2].trim(),
-          icon: getPhaseIcon(phaseNum),
-          subsections: []
-        };
-        currentSubsection = null;
-        continue;
+
+        // Add content to current subsection
+        if (currentPhase && currentSubsection && line) {
+          currentSubsection.content.push(line);
+        }
       }
 
-      // Detect subsection headers (__Title__)
-      const subsectionMatch = line.match(/^__(.+)__$/);
-      if (subsectionMatch && currentPhase) {
+      // Push last phase and subsection
+      if (currentPhase) {
         if (currentSubsection) {
           currentPhase.subsections.push(currentSubsection);
         }
-        const title = subsectionMatch[1].trim();
-        currentSubsection = {
-          title,
-          icon: getSubsectionIcon(title),
-          content: []
-        };
-        continue;
+        phases.push(currentPhase);
       }
-
-      // Add content to current subsection
-      if (currentPhase && currentSubsection && line) {
-        currentSubsection.content.push(line);
-      }
-    }
-
-    // Push last phase and subsection
-    if (currentPhase) {
-      if (currentSubsection) {
-        currentPhase.subsections.push(currentSubsection);
-      }
-      phases.push(currentPhase);
     }
 
     return phases;
   };
 
   const phases = parseContent(content);
+
+  const renderInlineLinks = (text: string, keyPrefix: string): ReactNode => {
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const nodes: ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let idx = 0;
+
+    while ((match = linkRegex.exec(text)) !== null) {
+      const [fullMatch, label, href] = match;
+      const start = match.index;
+
+      if (start > lastIndex) {
+        nodes.push(
+          <span key={`${keyPrefix}-text-${idx}`}>
+            {text.slice(lastIndex, start)}
+          </span>
+        );
+      }
+
+      nodes.push(
+        <a
+          key={`${keyPrefix}-link-${idx}`}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 underline underline-offset-2"
+        >
+          {label}
+        </a>
+      );
+
+      lastIndex = start + fullMatch.length;
+      idx += 1;
+    }
+
+    if (lastIndex < text.length) {
+      nodes.push(
+        <span key={`${keyPrefix}-tail`}>
+          {text.slice(lastIndex)}
+        </span>
+      );
+    }
+
+    return nodes.length > 0 ? nodes : text;
+  };
 
   // Render phase card
   const renderPhaseCard = (phase: typeof phases[0], idx: number) => {
@@ -1551,13 +2139,19 @@ function ImplementationSection({ content, locale }: { content: string; locale: s
                 <div className="space-y-3">
                   {subsection.content.map((item, itemIdx) => {
                     // List items
-                    if (item.match(/^\d+\./) || item.startsWith('-')) {
+                    if (/^\d+\.\s+/.test(item) || item.startsWith('-')) {
+                      const cleaned = item
+                        .replace(/^\d+\.\s+/, '')
+                        .replace(/^-\s*/, '')
+                        .replace(/\*\*/g, '');
                       return (
                         <div key={itemIdx} className="flex items-start gap-3 text-gray-700">
                           <span className="text-violet-600 flex-shrink-0 mt-1">
-                            {item.match(/^\d+\./) ? '➢' : '•'}
+                            {/^\d+\.\s+/.test(item) ? '➢' : '•'}
                           </span>
-                          <span className="leading-relaxed">{item.replace(/^\d+\.\s*/, '').replace(/^-\s*/, '').replace(/\*\*/g, '')}</span>
+                          <span className="leading-relaxed">
+                            {renderInlineLinks(cleaned, `impl-list-${idx}-${subIdx}-${itemIdx}`)}
+                          </span>
                         </div>
                       );
                     }
@@ -1583,9 +2177,10 @@ function ImplementationSection({ content, locale }: { content: string; locale: s
 
                     // Regular text
                     if (item && !item.startsWith('__')) {
+                      const cleaned = item.replace(/\*\*/g, '');
                       return (
                         <p key={itemIdx} className="text-gray-700 leading-relaxed">
-                          {item.replace(/\*\*/g, '')}
+                          {renderInlineLinks(cleaned, `impl-text-${idx}-${subIdx}-${itemIdx}`)}
                         </p>
                       );
                     }
@@ -1618,7 +2213,7 @@ function ImplementationSection({ content, locale }: { content: string; locale: s
 }
 
 // TechConfigurationSection Component - Step-based card design for technical configuration
-function TechConfigurationSection({ content, locale }: { content: string; locale: string }) {
+function TechConfigurationSection({ content, locale }: { content: ArenaTabContent; locale: string }) {
   const isChina = locale === 'zh';
 
   // Icon mapping for steps
@@ -1639,8 +2234,16 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
     return '📄';
   };
 
-  // Parse technical configuration content into steps
-  const parseContent = (text: string) => {
+  const parseContentFromMarkdown = (text: string): Array<{
+    number: number;
+    title: string;
+    icon: string;
+    subsections: Array<{
+      title: string;
+      icon: string;
+      content: string[];
+    }>;
+  }> => {
     const lines = text.split('\n');
     const steps: {
       number: number;
@@ -1656,6 +2259,13 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
     let currentStep: typeof steps[0] | null = null;
     let currentSubsection: typeof steps[0]['subsections'][0] | null = null;
     let inContentSection = false;
+    const hasExplicitHeader = lines.some((line) => {
+      const trimmed = line.trim();
+      return trimmed.startsWith('####') || trimmed.startsWith('# ');
+    });
+    if (!hasExplicitHeader) {
+      inContentSection = true;
+    }
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -1760,7 +2370,67 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
     return steps;
   };
 
-  const steps = parseContent(content);
+  const normalizeStructuredSteps = (input: unknown) => {
+    if (!Array.isArray(input)) return [] as Array<{
+      number: number;
+      title: string;
+      icon: string;
+      subsections: Array<{
+        title: string;
+        icon: string;
+        content: string[];
+      }>;
+    }>;
+
+    return input
+      .map((step, index) => {
+        const stepObj = (step && typeof step === 'object') ? (step as Record<string, unknown>) : null;
+        const number = typeof stepObj?.number === 'number' && Number.isFinite(stepObj.number)
+          ? stepObj.number
+          : index + 1;
+        const title = typeof stepObj?.title === 'string' && stepObj.title.trim()
+          ? stepObj.title.trim()
+          : `Step ${number}`;
+        const rawSubsections = Array.isArray(stepObj?.subsections) ? stepObj.subsections : [];
+        const subsections = rawSubsections
+          .map((sub) => {
+            const subObj = (sub && typeof sub === 'object') ? (sub as Record<string, unknown>) : null;
+            const subTitle = typeof subObj?.title === 'string' && subObj.title.trim() ? subObj.title.trim() : '';
+            if (!subTitle) return null;
+            const subContent = Array.isArray(subObj?.content)
+              ? subObj.content.filter((item): item is string => typeof item === 'string')
+              : [];
+            return {
+              title: subTitle,
+              icon: getSubsectionIcon(subTitle),
+              content: subContent,
+            };
+          })
+          .filter((item): item is NonNullable<typeof item> => item !== null);
+
+        return {
+          number,
+          title,
+          icon: getStepIcon(number),
+          subsections,
+        };
+      });
+  };
+
+  const steps = (() => {
+    if (typeof content === 'object') {
+      const structured = normalizeStructuredSteps(content.steps);
+      if (structured.length > 0) {
+        return structured;
+      }
+      const markdown = typeof content.markdown === 'string' ? content.markdown : '';
+      if (markdown.trim()) {
+        return parseContentFromMarkdown(markdown);
+      }
+      return [];
+    }
+    return parseContentFromMarkdown(content);
+  })();
 
   // Render step card
   const renderStepCard = (step: typeof steps[0], idx: number) => {
@@ -1848,7 +2518,7 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
                       }
 
                       // Determine content type
-                      const isListItem = trimmed.match(/^\d+\./) || trimmed.startsWith('-');
+                      const isListItem = /^\d+\.\s+/.test(trimmed) || trimmed.startsWith('-');
                       const isLink = trimmed.includes('[') && trimmed.includes('](');
 
                       if (isListItem) {
@@ -1904,10 +2574,10 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
                             {block.content.map((item, itemIdx) => (
                               <div key={itemIdx} className="flex items-start gap-3">
                                 <span className="text-gray-600 flex-shrink-0 mt-1">
-                                  {item.match(/^\d+\./) ? '➢' : '•'}
+                                  {/^\d+\.\s+/.test(item) ? '➢' : '•'}
                                 </span>
                                 <span className="leading-relaxed flex-1">
-                                  {item.replace(/^\d+\.\s*/, '').replace(/^-\s*/, '')}
+                                  {item.replace(/^\d+\.\s+/, '').replace(/^-\s*/, '')}
                                 </span>
                               </div>
                             ))}
@@ -1968,31 +2638,10 @@ function TechConfigurationSection({ content, locale }: { content: string; locale
           </motion.div>
         ))
       ) : (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-          <p className="text-yellow-800 font-semibold mb-4">
-            {isChina ? '⚠️ 内容解析失败，显示原始内容：' : '⚠️ Content parsing failed, showing raw content:'}
-          </p>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 overflow-auto max-h-96">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-            >
-              {content}
-            </ReactMarkdown>
-          </div>
-          <details className="mt-4">
-            <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
-              {isChina ? '查看调试信息' : 'Show debug info'}
-            </summary>
-            <div className="mt-2 bg-gray-900 text-green-400 p-4 rounded overflow-auto text-sm font-mono">
-              <p>Content length: {content.length}</p>
-              <p>First 500 chars:</p>
-              <pre>{content.substring(0, 500)}</pre>
-            </div>
-          </details>
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-gray-500">
+          {isChina ? '暂无技术配置内容' : 'No technical configuration content yet'}
         </div>
       )}
     </div>
   );
 }
-

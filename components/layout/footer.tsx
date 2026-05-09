@@ -6,6 +6,8 @@ import { Github } from 'lucide-react';
 export function Footer() {
   const t = useTranslations('footer');
   const locale = useLocale();
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const withBasePath = (path: string) => `${basePath}${path}`;
 
   return (
     <footer className="border-t border-gray-200 bg-bg-secondary">
@@ -24,17 +26,17 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-text-primary mb-4">{t('platform')}</h4>
             <ul className="space-y-2">
               <li>
-                <a href={`/${locale}/arena`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/arena`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('arena')}
                 </a>
               </li>
               <li>
-                <a href={`/${locale}/framework`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/framework`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('framework')}
                 </a>
               </li>
               <li>
-                <a href={`/${locale}/faq`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/faq`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('faq')}
                 </a>
               </li>
@@ -46,7 +48,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://github.com/THU-ZJAI/Real-World-AI"
+                  href="https://github.com/THU-ZJAI/Real-World-AI_Source"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-text-secondary hover:text-primary transition-colors"
@@ -55,7 +57,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`/${locale}/about`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/about`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('about')}
                 </a>
               </li>
@@ -74,12 +76,12 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-text-primary mb-4">{t('legal')}</h4>
             <ul className="space-y-2">
               <li>
-                <a href={`/${locale}/privacy`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/privacy`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('privacy')}
                 </a>
               </li>
               <li>
-                <a href={`/${locale}/terms`} className="text-sm text-text-secondary hover:text-primary transition-colors">
+                <a href={withBasePath(`/${locale}/terms`)} className="text-sm text-text-secondary hover:text-primary transition-colors">
                   {t('terms')}
                 </a>
               </li>
@@ -90,7 +92,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-text-secondary">{t('copyright')}</p>
           <a
-            href="https://github.com/THU-ZJAI/Real-World-AI"
+            href="https://github.com/THU-ZJAI/Real-World-AI_Source"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors"
