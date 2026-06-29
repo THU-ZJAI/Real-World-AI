@@ -14,7 +14,7 @@ GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周构�
 FFmpeg 官网：https://www.ffmpeg.org/
 FunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR
 PaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech
-Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",已验证,最快2.5日内生成1个企业级产品或功能简要演示视频,"信息技术, 金融贸易, 科研教育","服务, 营销",1~2天,中等,较高,较优,私部署版：OpenClaw + Kimi K2.7 Code/GLM 5.2/Qwen 3.7/DeepSeek V4 Pro/MiMo V2.5 Pro/Kimi K2.6  + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS,,,,
+Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",已验证,最快2.5日内生成1个企业级产品或功能简要演示视频,"信息技术, 金融贸易, 科研教育","服务, 营销",1~2天,中等,较高,较优,私部署版：OpenClaw + Kimi K2.7 Code/GLM 5.2/Qwen 3.7/DeepSeek V4 Pro/MiMo V2.5 Pro/Kimi K2.6  + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS,,,,
 5,儿童教育趣味应用,私部署版：BISHENG + GLM 5,"BISHENG(by 毕昇) GitHub：https://github.com/dataelement/bisheng
 GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周搭建一个儿童教育应用Demo,"科研教育, 文化体育",服务,一周,中等,较高,较优,私部署版：BISHENG + GLM 5.2/Minimax M3/Qwen 3.7/DeepSeek V4 Pro/Kimi K2.6/Hy3 preview/Step 3.7 Flash/Ling 2.6 flash,,,,
 6,长时间序列预测系统,私部署版：Autogluon + Neuralforecast + EMTSF,"Autogluon （by AWS AI） GitHub: https://github.com/autogluon/autogluon
