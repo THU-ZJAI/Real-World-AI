@@ -2,7 +2,7 @@
   {
     "arena_no": "1",
     "champion": "私部署版：Claude Code + DeepSeek V4 Pro + StepSearch",
-    "challenger": "私部署版：Hermes Agent + GLM 5.2/Qwen 3.7/MiMo V2.5 Pro/Kimi K2.6+ Metaso",
+    "challenger": "私部署版：Hermes Agent + Hy3/GLM 5.2/Qwen 3.7/MiMo V2.5 Pro/Kimi K2.6+ Metaso",
     "video_url_zh": "https://www.bilibili.com/video/BV1FxFYzyEk8",
     "video_url_global": "https://www.bilibili.com/video/BV1FxFYzyEk8",
     "video_cover_image_url": null,
@@ -56,7 +56,7 @@
   {
     "arena_no": "7",
     "champion": "私部署版：Gemini CLI + Gemini 3.1 Pro",
-    "challenger": "私部署版：Claude Code + GLM 5.2/Kimi K2.7 Code/Qwen 3.7/DeepSeek V4 Pro/MiMo V2.5 Pro/Kimi K2.6",
+    "challenger": "私部署版：Claude Code + Hy3/GLM 5.2/Kimi K2.7 Code/Qwen 3.7/DeepSeek V4 Pro/MiMo V2.5 Pro/Kimi K2.6",
     "video_url_zh": null,
     "video_url_global": null,
     "video_cover_image_url": null,
