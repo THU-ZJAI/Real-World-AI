@@ -16,7 +16,7 @@ FunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR
 PaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech
 Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",已验证,最快2.5日内生成1个企业级产品或功能简要演示视频,"信息技术, 金融贸易, 科研教育","服务, 营销",1~2天,中等,较高,较优,私部署版：OpenClaw + Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/GLM 5.2/DeepSeek V4 Pro/MiMo V2.5 Pro + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR/MiMo-V2.5-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS,,,,
 5,儿童教育趣味应用,私部署版：BISHENG + GLM 5,"BISHENG(by 毕昇) GitHub：https://github.com/dataelement/bisheng
-GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周搭建一个儿童教育应用Demo,"科研教育, 文化体育",服务,一周,中等,较高,较优,私部署版：BISHENG + Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/GLM 5.2/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 2.6 flash,,,,
+GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周搭建一个儿童教育应用Demo,"科研教育, 文化体育",服务,一周,中等,较高,较优,私部署版：BISHENG + Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/GLM 5.2/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 3.0 flash,,,,
 6,长时间序列预测系统,私部署版：Autogluon + Neuralforecast + EMTSF,"Autogluon （by AWS AI） GitHub: https://github.com/autogluon/autogluon
 Neuralforecast （by Nixtla） GitHub: https://github.com/Nixtla/neuralforecast
 ETT数据集SOTA 模型：https://arxiv.org/pdf/2510.23396",已验证,一周用低代码快速构建并验证一个面向能源领域的长时间序列预测系统Demo,能源制造,"运营, 风控",一周,中等,较高,较优,寻找攻擂者,,,,
