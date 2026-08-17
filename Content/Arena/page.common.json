@@ -2,7 +2,7 @@
   {
     "arena_no": "1",
     "champion": "私部署版：Claude Code + DeepSeek V4 Pro + StepSearch",
-    "challenger": "私部署版：Hermes Agent + Qwen3.8 Max/Kimi K3/Hy3/GLM 5.2/MiMo V2.5 Pro+ Metaso",
+    "challenger": "私部署版：Hermes Agent + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/MiMo V2.5 Pro+ Metaso",
     "video_url_zh": "https://www.bilibili.com/video/BV1FxFYzyEk8",
     "video_url_global": "https://www.bilibili.com/video/BV1FxFYzyEk8",
     "video_cover_image_url": null,
@@ -11,7 +11,7 @@
   {
     "arena_no": "2",
     "champion": "云端版：Lovable + Kimi K2.5 + Claude Code",
-    "challenger": "云端版：Lovable + Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/GLM 5.2/MiniMax M3/DeepSeek V4 Pro+ Claude Code",
+    "challenger": "云端版：Lovable + GLM 5.3/Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/MiniMax M3/DeepSeek V4 Pro+ Claude Code",
     "video_url_zh": "https://www.bilibili.com/video/BV1qxwXzAEME",
     "video_url_global": "https://www.bilibili.com/video/BV1qxwXzAEME",
     "video_cover_image_url": null,
@@ -29,7 +29,7 @@
   {
     "arena_no": "4",
     "champion": "私部署版：Claude Code + Claude Opus 4.6 + FFmpeg + FunASR + PaddleSpeech",
-    "challenger": "私部署版：OpenClaw + Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/GLM 5.2/DeepSeek V4 Pro/MiMo V2.5 Pro + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR/MiMo-V2.5-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS",
+    "challenger": "私部署版：OpenClaw + GLM 5.3/Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR/MiMo-V2.5-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS/IndexTTS-2.5/Dots-TTS",
     "video_url_zh": null,
     "video_url_global": null,
     "video_cover_image_url": null,
@@ -38,7 +38,7 @@
   {
     "arena_no": "5",
     "champion": "私部署版：BISHENG + GLM 5",
-    "challenger": "私部署版：BISHENG + Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/GLM 5.2/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 3.0 flash",
+    "challenger": "私部署版：BISHENG + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 3.0 flash",
     "video_url_zh": null,
     "video_url_global": null,
     "video_cover_image_url": null,
@@ -56,7 +56,7 @@
   {
     "arena_no": "7",
     "champion": "私部署版：Gemini CLI + Gemini 3.1 Pro",
-    "challenger": "私部署版：Claude Code + Qwen3.8 Max/Kimi K3/Hy3/GLM 5.2/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro",
+    "challenger": "私部署版：Claude Code + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro",
     "video_url_zh": null,
     "video_url_global": null,
     "video_cover_image_url": null,

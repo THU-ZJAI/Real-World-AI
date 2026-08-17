@@ -1,10 +1,10 @@
 ﻿arena_no,title,champion,related_references,verification_status,highlights,industry,category,speed,quality,security,cost,challenger,video_url_zh,video_url_global,video_cover_image_url,homepage_display_order
 1,智能调研报告生成,私部署版：Claude Code + DeepSeek V4 Pro + StepSearch,"Claude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code
 StepSearch MCP (by 阶跃星辰) 文档：https://platform.stepfun.com/docs/zh/step-plan/integrations/search-mcp
-DeepSeek-V4-Pro(by 深度求索) Hugging Face：https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",已验证,一周构建1个包含资料搜集、知识整合、报告生成功能的智能调研系统Demo,"信息技术, 金融贸易, 科研教育","服务, 运营, 管理",一周,较高,较高,较优,私部署版：Hermes Agent + Qwen3.8 Max/Kimi K3/Hy3/GLM 5.2/MiMo V2.5 Pro+ Metaso,https://www.bilibili.com/video/BV1FxFYzyEk8,https://www.bilibili.com/video/BV1FxFYzyEk8,,2
+DeepSeek-V4-Pro(by 深度求索) Hugging Face：https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",已验证,一周构建1个包含资料搜集、知识整合、报告生成功能的智能调研系统Demo,"信息技术, 金融贸易, 科研教育","服务, 运营, 管理",一周,较高,较高,较优,私部署版：Hermes Agent + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/MiMo V2.5 Pro+ Metaso,https://www.bilibili.com/video/BV1FxFYzyEk8,https://www.bilibili.com/video/BV1FxFYzyEk8,,2
 2,业务看板搭建,云端版：Lovable + Kimi K2.5 + Claude Code,"Lovable首页：https://lovable.dev/
 Claude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code
-Kimi-K2.5(by 月之暗面) GitHub：https://github.com/MoonshotAI/Kimi-K2.5",已验证,0技术门槛1-2日内搭建出1个有基础互动能力的业务看板或网站Demo,通用,"服务, 运营, 营销",1~2天,很高,较低,较优,云端版：Lovable + Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/GLM 5.2/MiniMax M3/DeepSeek V4 Pro+ Claude Code,https://www.bilibili.com/video/BV1qxwXzAEME,https://www.bilibili.com/video/BV1qxwXzAEME,,1
+Kimi-K2.5(by 月之暗面) GitHub：https://github.com/MoonshotAI/Kimi-K2.5",已验证,0技术门槛1-2日内搭建出1个有基础互动能力的业务看板或网站Demo,通用,"服务, 运营, 营销",1~2天,很高,较低,较优,云端版：Lovable + GLM 5.3/Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/MiniMax M3/DeepSeek V4 Pro+ Claude Code,https://www.bilibili.com/video/BV1qxwXzAEME,https://www.bilibili.com/video/BV1qxwXzAEME,,1
 3,文档审核与风控,私部署版：LangChain + GLM 5+ Pydantic + unstructured + Faiss,"LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain
 Pydantic（by Pydantic） Github: https://github.com/pydantic/pydantic
 unstructured（by Unstructured.io） Github : https://github.com/Unstructured-IO/unstructured
@@ -14,14 +14,14 @@ GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周构�
 FFmpeg 官网：https://www.ffmpeg.org/
 FunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR
 PaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech
-Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",已验证,最快2.5日内生成1个企业级产品或功能简要演示视频,"信息技术, 金融贸易, 科研教育","服务, 营销",1~2天,中等,较高,较优,私部署版：OpenClaw + Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/GLM 5.2/DeepSeek V4 Pro/MiMo V2.5 Pro + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR/MiMo-V2.5-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS,,,,
+Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",已验证,最快2.5日内生成1个企业级产品或功能简要演示视频,"信息技术, 金融贸易, 科研教育","服务, 营销",1~2天,中等,较高,较优,私部署版：OpenClaw + GLM 5.3/Kimi K3/Qwen3.8 Max/Hy3/LongCat 2.0/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro + FFmpeg + MOSS-Audio/FireRedASR/Qwen3-ASR/GLM-ASR/MiMo-V2.5-ASR + MOSS-TTS/VoxCPM/Qwen3-TTS/Fun-CosyVoice 3.0/GLM-TTS/Step-Audio-TTS/Confucius4-TTS/IndexTTS-2.5/Dots-TTS,,,,
 5,儿童教育趣味应用,私部署版：BISHENG + GLM 5,"BISHENG(by 毕昇) GitHub：https://github.com/dataelement/bisheng
-GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周搭建一个儿童教育应用Demo,"科研教育, 文化体育",服务,一周,中等,较高,较优,私部署版：BISHENG + Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/GLM 5.2/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 3.0 flash,,,,
+GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",已验证,一周搭建一个儿童教育应用Demo,"科研教育, 文化体育",服务,一周,中等,较高,较优,私部署版：BISHENG + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/LongCat 2.0/Minimax M3/DeepSeek V4 Pro/Step 3.7 Flash/Ling 3.0 flash,,,,
 6,长时间序列预测系统,私部署版：Autogluon + Neuralforecast + EMTSF,"Autogluon （by AWS AI） GitHub: https://github.com/autogluon/autogluon
 Neuralforecast （by Nixtla） GitHub: https://github.com/Nixtla/neuralforecast
 ETT数据集SOTA 模型：https://arxiv.org/pdf/2510.23396",已验证,一周用低代码快速构建并验证一个面向能源领域的长时间序列预测系统Demo,能源制造,"运营, 风控",一周,中等,较高,较优,寻找攻擂者,,,,
 7,智能文档翻译系统,私部署版：Gemini CLI + Gemini 3.1 Pro,"Gemini CLI(by Google) GitHub：https://github.com/google-gemini/gemini-cli
-Gemini 3.1 Pro(by Google) 官网：https://deepmind.google/models/gemini/pro/",已验证,一周快速构建1个智能文档翻译Demo,通用,"服务, 运营, 管理",一周,中等,较高,较优,私部署版：Claude Code + Qwen3.8 Max/Kimi K3/Hy3/GLM 5.2/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro,,,,
+Gemini 3.1 Pro(by Google) 官网：https://deepmind.google/models/gemini/pro/",已验证,一周快速构建1个智能文档翻译Demo,通用,"服务, 运营, 管理",一周,中等,较高,较优,私部署版：Claude Code + GLM 5.3/Qwen3.8 Max/Kimi K3/Hy3/Kimi K2.7 Code/DeepSeek V4 Pro/MiMo V2.5 Pro,,,,
 8,智能合同法审系统,私部署版：BISHENG,BISHENG GitHub：https://github.com/dataelement/bisheng,验证中,一天搭建出基于要素抽取与跨合同规则校验、可配置与溯源的智能合同法审系统Demo,金融贸易,风控,1~2天,中等,较高,较优,寻找攻擂者,,,,
 9,通用目标检测系统,私部署版：Ultralytics YOLO （YOLO 11）+ Triton + Perf Analyzer,"Ultralytics YOLO （by Ultralytics） : https://docs.ultralytics.com/models/yolo11/
 Triton （by NVIDIA） GitHub : https://github.com/triton-inference-server/server/blob/main/docs/user_guide/model_configuration.md
