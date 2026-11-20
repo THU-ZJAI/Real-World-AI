@@ -94,10 +94,10 @@
 <p>作者网站：本站</p>
 <p>关联引用</p>
 <p>LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain</p>
-<p>GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5</p>
+<p>GLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5</p>
 <p>版本状态</p>
 <p>首发日期：2026-01-13</p>
-<p>最近更新：2026-11-16</p>
+<p>最近更新：2026-11-20</p>
 <p>版本编号：Case260113X01</p></td>
 </tr>
 </tbody>

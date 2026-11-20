@@ -91,10 +91,10 @@
 <p>FFmpeg 官网：https://www.ffmpeg.org/</p>
 <p>FunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR</p>
 <p>PaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech</p>
-<p>Claude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus</p>
+<p>Claude Opus 5.5(by Anthropic)：https://www.anthropic.com/claude-opus-5-5</p>
 <p>版本状态</p>
 <p>首发日期：2025-11-07</p>
-<p>最近更新：2026-11-16</p>
+<p>最近更新：2026-11-20</p>
 </td>
 </tr>
 </tbody>

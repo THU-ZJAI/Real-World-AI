@@ -15,7 +15,7 @@
   {
     "arena_no": "2",
     "title": "Business Dashboard & Website Demo",
-    "related_references": "Lovable Homepage: https://lovable.dev/\nClaude Code (by Anthropic) GitHub: https://github.com/anthropics/claude-code\nKimi-K2.5 (by Moonshot AI) GitHub: https://github.com/MoonshotAI/Kimi-K2.5",
+    "related_references": "Lovable Homepage: https://lovable.dev/\nClaude Code (by Anthropic) GitHub: https://github.com/anthropics/claude-code\nKimi-K3.1-Pro (by Moonshot AI) Hugging Face: https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
     "verification_status": "Verified",
     "highlights": "Build a business dashboard or website demo with basic interactive capabilities in 1-2 days with zero technical threshold",
     "industry": "General",
@@ -28,7 +28,7 @@
   {
     "arena_no": "3",
     "title": "Document Review & Risk Control Demo",
-    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nPydantic (by Pydantic) GitHub: https://github.com/pydantic/pydantic\nunstructured (by Unstructured-IO) GitHub: https://github.com/Unstructured-IO/unstructured\nFaiss (by Facebook Research) GitHub: https://github.com/facebookresearch/faiss\nGLM-5 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nPydantic (by Pydantic) GitHub: https://github.com/pydantic/pydantic\nunstructured (by Unstructured-IO) GitHub: https://github.com/Unstructured-IO/unstructured\nFaiss (by Facebook Research) GitHub: https://github.com/facebookresearch/faiss\nGLM-5.3 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
     "verification_status": "Verified",
     "highlights": "Build a document parsing system demo with completeness checks and risk assessment in one week",
     "industry": "Information Technology, Finance & Trade, Energy & Manufacturing, Administration",
@@ -41,7 +41,7 @@
   {
     "arena_no": "4",
     "title": "Enterprise Demo Video",
-    "related_references": "Claude Code (by Anthropic) GitHub: https://github.com/anthropics/claude-code\nFFmpeg Official Website: https://www.ffmpeg.org/\nFunASR (by Alibaba) GitHub: https://github.com/modelscope/FunASR\nPaddleSpeech (by Baidu) GitHub: https://github.com/PaddlePaddle/PaddleSpeech\nClaude Opus 4.6 (by Anthropic) Official Page: https://www.anthropic.com/claude/opus",
+    "related_references": "Claude Code (by Anthropic) GitHub: https://github.com/anthropics/claude-code\nFFmpeg Official Website: https://www.ffmpeg.org/\nFunASR (by Alibaba) GitHub: https://github.com/modelscope/FunASR\nPaddleSpeech (by Baidu) GitHub: https://github.com/PaddlePaddle/PaddleSpeech\nClaude Opus 5.5 (by Anthropic) Official Page: https://www.anthropic.com/claude-opus-5-5",
     "verification_status": "Verified",
     "highlights": "Generate an enterprise-level product or feature demo video within 2.5 days at fastest",
     "industry": "Information Technology, Finance & Trade, Science & Education",
@@ -54,7 +54,7 @@
   {
     "arena_no": "5",
     "title": "Educational App for Children Demo",
-    "related_references": "BISHENG (by DataElement) GitHub: https://github.com/dataelement/bisheng\nGLM-5 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
+    "related_references": "BISHENG (by DataElement) GitHub: https://github.com/dataelement/bisheng\nGLM-5.3 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
     "verification_status": "Verified",
     "highlights": "Build a children's education app demo in one week",
     "industry": "Science & Education, Culture & Sports",
@@ -80,7 +80,7 @@
   {
     "arena_no": "7",
     "title": "Intelligent Document Translation System Demo",
-    "related_references": "Gemini CLI (by Google) GitHub: https://github.com/google-gemini/gemini-cli\nGemini 3.1 Pro (by Google) Official Site: https://deepmind.google/models/gemini/pro/",
+    "related_references": "Gemini CLI (by Google) GitHub: https://github.com/google-gemini/gemini-cli\nGemini 4 Carbon (by Google) Official Site: https://deepmind.google/models/model-cards/gemini-4-carbon",
     "verification_status": "Verified",
     "highlights": "Rapidly build an intelligent document translation demo in one week",
     "industry": "General",
@@ -132,7 +132,7 @@
   {
     "arena_no": "11",
     "title": "Feature Recommendation Assistant Demo",
-    "related_references": "Coze (by ByteDance): https://www.coze.cn/\nGLM-5 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
+    "related_references": "Coze (by ByteDance): https://www.coze.cn/\nGLM-5.3 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
     "verification_status": "In Verification",
     "highlights": "Build a conversational assistant demo with active questioning and recommendation capabilities using low-code in one week",
     "industry": "Information Technology, Science & Education",
@@ -145,7 +145,7 @@
   {
     "arena_no": "12",
     "title": "Intelligent Credit Report Generation System Demo",
-    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nGLM-5 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nDeepSeek-V4.1-Flash (by DeepSeek) Hugging Face: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017",
     "verification_status": "In Verification",
     "highlights": "Build a banking intelligent credit system demo with multi-source data integration, compliance verification, and one-click credit report generation using low-code in one week",
     "industry": "Finance & Trade",
@@ -158,7 +158,7 @@
   {
     "arena_no": "13",
     "title": "Single Industrial Chain Graph",
-    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nGLM-5 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain (by LangChain) GitHub: https://github.com/langchain-ai/langchain\nGLM-5.3 (by Zhipu AI) GitHub: https://github.com/zai-org/GLM-5",
     "verification_status": "In Verification",
     "highlights": "Complete the full-process construction of a single national industrial chain graph using low-code in one week",
     "industry": "Finance & Trade, Energy & Manufacturing",

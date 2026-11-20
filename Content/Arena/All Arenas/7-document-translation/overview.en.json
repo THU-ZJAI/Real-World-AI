@@ -26,7 +26,7 @@
           "title": "2.1 Overview",
           "content": [
             "**Business Background**: Text translation is widely used in daily office work, cross-border business communication, research paper writing and reading, product localization, and multi-region distribution of operational content. It is a high-frequency, hard-demand capability in industries such as information technology, finance and trade, scientific research and education, and cultural media. Beyond fragment translation, real business workflows also require efficient translation solutions for editable document formats such as Word, PDF, and Markdown.",
-            "**Solution**: To address this, this case proposes a privately deployable intelligent translation workflow. Based on the Gemini 3 Pro large model, which is currently at the SOTA level in overall translation capability, and combined with Gemini CLI and configurable prompt files, it delivers an integrated workflow covering text input, intelligent translation, quality evaluation, and result output."
+            "**Solution**: To address this, this case proposes a privately deployable intelligent translation workflow. Based on the Gemini 4 Carbon large model, which is currently at the SOTA level in overall translation capability, and combined with Gemini CLI and configurable prompt files, it delivers an integrated workflow covering text input, intelligent translation, quality evaluation, and result output."
           ]
         },
         {
@@ -87,8 +87,8 @@
             "- **English Name**: Real-World AI",
             "- **Author Website**: This site",
             "- **Initial Release Date**: 2025-11-27",
-            "- **Last Updated**: 2026-11-16",
-            "- **Key Dependencies**: Gemini CLI · Gemini 3.1 Pro"
+            "- **Last Updated**: 2026-11-20",
+            "- **Key Dependencies**: Gemini CLI · Gemini 4 Carbon"
           ]
         },
         {

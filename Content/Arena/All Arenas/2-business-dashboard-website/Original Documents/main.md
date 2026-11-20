@@ -94,10 +94,10 @@
 <p>关联引用</p>
 <p>Lovable首页：https://lovable.dev/</p>
 <p>Claude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code</p>
-<p>Kimi-K2.5(by 月之暗面) GitHub：https://github.com/MoonshotAI/Kimi-K2.5</p>
+<p>Kimi-K3.1-Pro(by 月之暗面) Hugging Face：https://huggingface.co/moonshotai/Kimi-K3.1-Pro</p>
 <p>版本状态</p>
 <p>首发日期：2025-11-07</p>
-<p>最近更新：2026-11-16</p>
+<p>最近更新：2026-11-20</p>
 </td>
 </tr>
 </tbody>

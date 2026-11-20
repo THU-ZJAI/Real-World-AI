@@ -77,7 +77,7 @@
           "content": [
             "- Leading performance: The composite score on the evaluation set reaches 49, more than 41% better than the original manual-plus-semi-automated solution, ranking first among participating solutions.",
             "- Faster generation: A single report is completed in <=15 minutes, 33% faster than comparable intelligent workflows in the market and about 160x more efficient than manual methods.",
-            "- Lower cost: Compatible with cost-effective models such as MiniMax-M2.1 and GLM-5, reducing overall operating cost by nearly 60%.",
+            "- Lower cost: Compatible with cost-effective models such as DeepSeek-V4.1-Flash and GLM-5.3, reducing overall operating cost by nearly 60%.",
             "- Enterprise-ready: Template coverage reaches >=95% and content accuracy exceeds 90%, directly supporting credit approval, due diligence, post-loan management, and related scenarios."
           ]
         },
@@ -90,7 +90,7 @@
             "- **English Name**: Real-World AI",
             "- **Author Website**: This site",
             "- **Initial Release Date**: 2026-01-07",
-            "- **Last Updated**: 2026-11-16",
+            "- **Last Updated**: 2026-11-20",
             "- **Key Dependencies**: LangChain (by LangChain) · GLM"
           ]
         },

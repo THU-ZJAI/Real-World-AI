@@ -15,7 +15,7 @@
   {
     "arena_no": "2",
     "title": "业务看板搭建",
-    "related_references": "Lovable首页：https://lovable.dev/\nClaude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code\nKimi-K2.5(by 月之暗面) GitHub：https://github.com/MoonshotAI/Kimi-K2.5",
+    "related_references": "Lovable首页：https://lovable.dev/\nClaude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code\nKimi-K3.1-Pro(by 月之暗面) Hugging Face：https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
     "verification_status": "已验证",
     "highlights": "0技术门槛1-2日内搭建出1个有基础互动能力的业务看板或网站Demo",
     "industry": "通用",
@@ -28,7 +28,7 @@
   {
     "arena_no": "3",
     "title": "文档审核与风控",
-    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nPydantic（by Pydantic） Github: https://github.com/pydantic/pydantic\nunstructured（by Unstructured.io） Github : https://github.com/Unstructured-IO/unstructured\nFaiss（by Facebook） Github: https://github.com/facebookresearch/faiss\nGLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nPydantic（by Pydantic） Github: https://github.com/pydantic/pydantic\nunstructured（by Unstructured.io） Github : https://github.com/Unstructured-IO/unstructured\nFaiss（by Facebook） Github: https://github.com/facebookresearch/faiss\nGLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
     "verification_status": "已验证",
     "highlights": "一周构建1个完整性检查与风险评估的文档解析系统Demo",
     "industry": "信息技术, 金融贸易, 能源制造, 行政管理",
@@ -41,7 +41,7 @@
   {
     "arena_no": "4",
     "title": "企业演示视频",
-    "related_references": "Claude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code\nFFmpeg 官网：https://www.ffmpeg.org/\nFunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR\nPaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech\nClaude Opus 4.6(by Anthropic) GitHub：https://www.anthropic.com/claude/opus",
+    "related_references": "Claude Code (by Anthropic) GitHub：https://github.com/anthropics/claude-code\nFFmpeg 官网：https://www.ffmpeg.org/\nFunASR(by 阿里) GitHub：https://github.com/modelscope/FunASR\nPaddleSpeech(by 百度) GitHub：https://github.com/PaddlePaddle/PaddleSpeech\nClaude Opus 5.5(by Anthropic)：https://www.anthropic.com/claude-opus-5-5",
     "verification_status": "已验证",
     "highlights": "最快2.5日内生成1个企业级产品或功能简要演示视频",
     "industry": "信息技术, 金融贸易, 科研教育",
@@ -54,7 +54,7 @@
   {
     "arena_no": "5",
     "title": "儿童教育趣味应用",
-    "related_references": "BISHENG(by 毕昇) GitHub：https://github.com/dataelement/bisheng\nGLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
+    "related_references": "BISHENG(by 毕昇) GitHub：https://github.com/dataelement/bisheng\nGLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
     "verification_status": "已验证",
     "highlights": "一周搭建一个儿童教育应用Demo",
     "industry": "科研教育, 文化体育",
@@ -80,7 +80,7 @@
   {
     "arena_no": "7",
     "title": "智能文档翻译系统",
-    "related_references": "Gemini CLI(by Google) GitHub：https://github.com/google-gemini/gemini-cli\nGemini 3.1 Pro(by Google) 官网：https://deepmind.google/models/gemini/pro/",
+    "related_references": "Gemini CLI(by Google) GitHub：https://github.com/google-gemini/gemini-cli\nGemini 4 Carbon(by Google) 官网：https://deepmind.google/models/model-cards/gemini-4-carbon",
     "verification_status": "已验证",
     "highlights": "一周快速构建1个智能文档翻译Demo",
     "industry": "通用",
@@ -132,7 +132,7 @@
   {
     "arena_no": "11",
     "title": "功能推荐助手",
-    "related_references": "Coze （by 字节跳动） : https://www.coze.cn/\nGLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
+    "related_references": "Coze （by 字节跳动） : https://www.coze.cn/\nGLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
     "verification_status": "验证中",
     "highlights": "一周基于低代码构建一个具备主动追问与推荐能力的对话式助手Demo",
     "industry": "信息技术, 科研教育",
@@ -145,7 +145,7 @@
   {
     "arena_no": "12",
     "title": "智能信贷报告生成系统",
-    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nGLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nDeepSeek-V4.1-Flash(by 深度求索) Hugging Face：https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017",
     "verification_status": "验证中",
     "highlights": "一周低代码构建具备多源数据整合、合规校验、信贷报告一键生成能力的银行智能信贷系统Demo",
     "industry": "金融贸易",
@@ -158,7 +158,7 @@
   {
     "arena_no": "13",
     "title": "单条产业链图谱",
-    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nGLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
+    "related_references": "LangChain（by LangChain） GitHub：https://github.com/langchain-ai/langchain\nGLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5",
     "verification_status": "验证中",
     "highlights": "一周低代码完成单条全国产业链图谱全流程构建",
     "industry": "金融贸易, 能源制造",

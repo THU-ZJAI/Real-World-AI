@@ -89,10 +89,10 @@
 <p>Pydantic（by Pydantic） Github: https://github.com/pydantic/pydantic</p>
 <p>unstructured（by Unstructured.io） Github : https://github.com/Unstructured-IO/unstructured</p>
 <p>Faiss（by Facebook） Github: https://github.com/facebookresearch/faiss</p>
-<p>GLM-5(by 智谱) GitHub：https://github.com/zai-org/GLM-5</p>
+<p>GLM-5.3(by 智谱) GitHub：https://github.com/zai-org/GLM-5</p>
 <p>版本状态</p>
 <p>首发日期：2025-11-14</p>
-<p>最近更新：2026-11-16</p>
+<p>最近更新：2026-11-20</p>
 </td>
 </tr>
 </tbody>
